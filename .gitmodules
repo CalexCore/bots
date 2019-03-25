@@ -1,0 +1,6 @@
+[submodule "External/AngryWasp.Serializer"]
+	path = External/AngryWasp.Serializer
+	url = https://bitbucket.org/angrywasp/angrywasp.serializer
+[submodule "External/Nerva.Rpc.CSharp"]
+	path = External/Nerva.Rpc.CSharp
+	url = https://bitbucket.org/nerva-project/nerva.rpc.csharp

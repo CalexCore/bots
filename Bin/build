@@ -1,0 +1,8 @@
+#!/bin/bash
+dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+build_type=Release
+
+dotnet build -c ${build_type} ${dir}/../Bots/Atom/Atom.csproj
+dotnet build -c ${build_type} ${dir}/../Bots/Fusion/Fusion.csproj
+dotnet build -c ${build_type} ${dir}/../Bots/Magellan/Magellan.csproj

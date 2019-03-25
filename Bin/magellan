@@ -1,0 +1,4 @@
+#!/bin/bash
+dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+token=FXXCAEFbv+Hz65LXBk30SoKbR5ZQcQyRHtWgmcBg7/TuQbrVbKoRfLuRk1XIYafYCpSZTgZvvtXqjqlU/SAo34Jq/vVz/085q8n1z7YhgD/l0iKZwNp0q67X+S8ymOWv
+dotnet ${dir}/Release/Nerva.Bots.dll --bot ${dir}/Release/Magellan.dll --dev-mode --token ${token}

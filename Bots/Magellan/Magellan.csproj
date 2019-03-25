@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../Bots.targets"/>
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Magellan</RootNamespace>
+  </PropertyGroup>
+</Project>

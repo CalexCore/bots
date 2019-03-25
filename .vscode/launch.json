@@ -1,0 +1,31 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Atom",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceRoot}/Bin/Debug/Nerva.Bots.dll",
+            "cwd": "${workspaceRoot}/Bin",
+            "preLaunchTask": "build-debug",
+            "console": "externalTerminal",
+            "args":[
+                "--dev-mode", "--bot", "${workspaceRoot}/Bin/Debug/Atom.dll",
+                "--token", "zUe8edTJjCydC+Zy5IJclKPNlVmTWT46deJBLmzu09xZ5/D6Gclh32nig0jJ1RWm1viJkxoCm3/6Fhle1xakrk9sfP4vLiiE+D+yt2ZMClkB62N3QFrebUTVLOmlWHc6",
+            ]
+        },
+        {
+            "name": "Magellan",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceRoot}/Bin/Debug/Nerva.Bots.dll",
+            "cwd": "${workspaceRoot}/Bin",
+            "preLaunchTask": "build-debug",
+            "args":[
+                "--dev-mode",
+                "--bot", "${workspaceRoot}/Bin/Debug/Magellan.dll",
+                "--token-file", "${workspaceRoot}/Bin/magellan-token",
+            ]
+        }
+    ]
+}

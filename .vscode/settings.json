@@ -1,0 +1,18 @@
+{
+    "editor.minimap.enabled": false,
+    "files.associations": {
+        "*.jeto": "json",
+    },
+    "editor.dragAndDrop": false,
+    "editor.occurrencesHighlight": false,
+    "editor.parameterHints.enabled": false,
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true, 
+        "**/obj": true
+    },
+    "update.showReleaseNotes": false
+}

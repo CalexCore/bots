@@ -1,0 +1,6 @@
+Bin/encrypt-tokens
+Bin/fusion-keys
+Bin/tile
+**/Bin/Release
+**/Bin/Debug
+**/obj

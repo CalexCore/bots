@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../Bots.targets"/>
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Fusion</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Portable.BouncyCastle" Version="*"/>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../External/Nerva.Rpc.CSharp/Src/Nerva.Rpc/Nerva.Rpc.csproj" />
+  </ItemGroup>
+</Project>
