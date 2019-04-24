@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <RootNamespace>Tools</RootNamespace>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
@@ -10,12 +10,12 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>portable</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>../Bin/$(Configuration)</OutputPath>
+    <OutputPath>../../Bin/$(Configuration)</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <Optimize>true</Optimize>
-    <OutputPath>../Bin/$(Configuration)</OutputPath>
+    <OutputPath>../../Bin/$(Configuration)</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Portable.BouncyCastle" Version="*"/>

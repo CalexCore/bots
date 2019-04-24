@@ -61,13 +61,19 @@ namespace Nerva.Bots
 				await Log.Write($"Loaded token {token}");
 
 			string pw = null;
+			string decryptedToken = null;
 
             if (cmd["password"] != null)
                 pw = cmd["password"].Value;
             else
                 pw = PasswordPrompt.Get();
-            
-			string decryptedToken = token.Decrypt(pw);
+
+			try {
+				decryptedToken = token.Decrypt(pw);
+			} catch {
+				await Log.Write(Log_Severity.Fatal, "Incorrect password");
+				Environment.Exit(0);
+			}
 
 			await Log.Write($"Dev Mode: {Globals.DevMode}");
 

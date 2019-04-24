@@ -1,4 +1,5 @@
 Bin/encrypt-tokens
+Bin/geo-api-key
 Bin/fusion-keys
 Bin/tile
 **/Bin/Release

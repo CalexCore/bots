@@ -7,7 +7,6 @@
             "request": "launch",
             "program": "${workspaceRoot}/Bin/Debug/Nerva.Bots.dll",
             "cwd": "${workspaceRoot}/Bin",
-            "preLaunchTask": "build-debug",
             "console": "externalTerminal",
             "args":[
                 "--dev-mode", "--bot", "${workspaceRoot}/Bin/Debug/Atom.dll",
@@ -20,11 +19,22 @@
             "request": "launch",
             "program": "${workspaceRoot}/Bin/Debug/Nerva.Bots.dll",
             "cwd": "${workspaceRoot}/Bin",
+            "console": "externalTerminal",
+            "args":[
+                "--dev-mode", "--bot", "${workspaceRoot}/Bin/Debug/Magellan.dll",
+                "--token", "FXXCAEFbv+Hz65LXBk30SoKbR5ZQcQyRHtWgmcBg7/TuQbrVbKoRfLuRk1XIYafYCpSZTgZvvtXqjqlU/SAo34Jq/vVz/085q8n1z7YhgD/l0iKZwNp0q67X+S8ymOWv",
+            ]
+        },
+        {
+            "name": "MagellanServer",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceRoot}/Bin/Debug/Magellan.Server.dll",
+            "cwd": "${workspaceRoot}/Bin",
+            "console": "externalTerminal",
             "preLaunchTask": "build-debug",
             "args":[
-                "--dev-mode",
-                "--bot", "${workspaceRoot}/Bin/Debug/Magellan.dll",
-                "--token-file", "${workspaceRoot}/Bin/magellan-token",
+                "--geo-api-key-file", "${workspaceRoot}/Bin/geo-api-key"
             ]
         }
     ]
