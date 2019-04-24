@@ -1,29 +1,23 @@
-using System;
-using System.Collections.Generic;    
-using System.Linq;    
-using System.Text;    
-using System.Net.Sockets;    
+using System.Text;
+using System.Net.Sockets;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using System.IO;
 using AngryWasp.Logger;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using AngryWasp.Serializer;
 
 namespace MagellanServer
 {
     public class RpcListener
     {
-        public void Start()
-        { 
-            Thread rpcThread = new Thread(new ThreadStart(InitRpcLoop));
-            rpcThread.Start();  
-        }
+        private NodeMapDataStore dataStore = new NodeMapDataStore();
 
-        private void InitRpcLoop()
-        {
-            TcpListener listener = new TcpListener(IPAddress.Parse("0.0.0.0"), 12345);    
+        public void Start(NodeMapDataStore ds, int port)
+        { 
+            dataStore = ds;
+            TcpListener listener = new TcpListener(IPAddress.Parse("0.0.0.0"), port);    
             listener.Start();     
             Log.Instance.Write("Local endpoint: " + listener.LocalEndpoint);    
             Log.Instance.Write("RPC server initialized");
@@ -32,7 +26,7 @@ namespace MagellanServer
             {
                 if (listener.Pending())
                 {
-                    Task.Run(() =>
+                    //Task.Run(() =>
                     {
                         var c = listener.AcceptTcpClient();
                         c.NoDelay = true;
@@ -57,6 +51,7 @@ namespace MagellanServer
 
                             dynamic json = JObject.Parse(content);
                             bool ok = false;
+                            string resultData = null;
 
                             if (json.method == null)
                                 Log.Instance.Write(Log_Severity.Warning, "No JSON method provided");
@@ -68,12 +63,17 @@ namespace MagellanServer
                                     case "submit":
                                     {   
                                         NodeMapEntry nme = JsonConvert.DeserializeObject<RpcRequest<NodeMapEntry>>(content).Params;
-                                        NodeMapDataStore.Add(nme);
-                                        ok = true;
+                                        ok = dataStore.Add(nme);
+                                        if (ok)
+                                        {
+                                            new ObjectSerializer().Serialize(dataStore, "NodeMap.xml");
+                                            Log.Instance.Write("Node map data saved");
+                                        }
                                     }
                                     break;
                                     case "fetch":
                                     {
+                                        resultData = dataStore.ToJson();
                                         ok = true;
                                     }
                                     break;
@@ -84,7 +84,12 @@ namespace MagellanServer
                             }
 
                             if (ok)
-                                ns.Write(Encoding.ASCII.GetBytes("{\"status\":\"OK\"}\r\n"));
+                            {
+                                if (resultData == null)
+                                    ns.Write(Encoding.ASCII.GetBytes("{\"status\":\"OK\"}\r\n"));
+                                else
+                                    ns.Write(Encoding.ASCII.GetBytes($"{{\"status\":\"OK\",\"result\":{resultData}}}\r\n"));
+                            }
                             else
                                 ns.Write(Encoding.ASCII.GetBytes("{\"status\":\"ERROR\"}\r\n"));
 
@@ -96,7 +101,7 @@ namespace MagellanServer
                             ns.Close();
                         }
                         
-                    });
+                    }
                 }
                 else
                     Thread.Sleep(50);

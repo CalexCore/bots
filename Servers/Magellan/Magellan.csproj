@@ -20,9 +20,9 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../External/AngryWasp.Serializer/Src/AngryWasp.Serializer/AngryWasp.Serializer.csproj"/>
+    <ProjectReference Include="../../External/AngryWasp.Serializer/Src/AngryWasp.Serializer.Serializers/AngryWasp.Serializer.Serializers.csproj"/>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="*"/>
-    <PackageReference Include="IPGeolocation.IPGeolocation" Version="*"/>
   </ItemGroup>
 </Project>

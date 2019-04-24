@@ -5,7 +5,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using AngryWasp.Logger;
-using IPGeolocation;
 using Newtonsoft.Json.Linq;
 
 namespace MagellanServer
@@ -31,6 +30,33 @@ namespace MagellanServer
 
     public static class GeoLocator
     {
+        public static bool HttpRequest(string ip, out string returnString)
+        {
+            string url = $"https://api.ipgeolocation.io/ipgeo?apiKey={ApiKey}&ip={ip}&fields=latitude,longitude";
+
+            try
+            {
+                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+                req.Method = "GET";
+                HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
+
+                using (Stream stream = resp.GetResponseStream())
+                {
+                    StreamReader reader = new StreamReader(stream, System.Text.Encoding.UTF8);
+                    returnString = reader.ReadToEnd();
+                }
+                    
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.Instance.Write($"Error attempting HTTP request {url}");
+                Log.Instance.WriteNonFatalException(ex);
+                returnString = null;
+                return false;
+            }
+        }
+
         public static string ApiKey { get; set; } = null;
 
         public static bool Get(string ip, out float latitude, out float longitude)
@@ -50,30 +76,32 @@ namespace MagellanServer
 
             try
             {
-                IPGeolocationAPI api = new IPGeolocationAPI(ApiKey);
+                string returnJson;
+                HttpRequest(ip, out returnJson);
 
-                GeolocationParams gp = new GeolocationParams();
-                gp.SetIPAddress(ip);
-                gp.SetFields("latitude,longitude");
+                dynamic result = JObject.Parse(returnJson);
 
-                Geolocation locate = api.GetGeolocation(gp);
-
-                if (locate.GetStatus() == 200)
+                if (result.ip == null || result.ip.Value != ip)
                 {
-                    if (!float.TryParse(locate.GetLatitude(), out latitude) ||
-                        !float.TryParse(locate.GetLongitude(), out longitude))
-                    {
-                        Log.Instance.Write(Log_Severity.Error, "Failed to parse latitude and/or longituide");
-                        return false;
-                    }
-
-                    return true;
-                }
-                else
-                {
-                    Log.Instance.Write(Log_Severity.Error, $"Geolocation returned error: {locate.GetMessage()}");
+                    Log.Instance.Write(Log_Severity.Error, "Returned IP does not match requested");
                     return false;
                 }
+
+                if (result.latitude == null || result.longitude == null)
+                {
+                    Log.Instance.Write(Log_Severity.Error, "Latitude and/or longitude is null");
+                    return false;
+                }
+
+                if (!float.TryParse(result.latitude.Value, out latitude) ||
+                    !float.TryParse(result.longitude.Value, out longitude))
+                {
+                    Log.Instance.Write(Log_Severity.Error, "Failed to parse latitude and/or longituide");
+                    return false;
+                }
+
+                return true;
+
             }
             catch (Exception ex)
             {

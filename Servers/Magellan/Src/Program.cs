@@ -1,13 +1,18 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using AngryWasp.Helpers;
 using AngryWasp.Logger;
+using AngryWasp.Serializer;
+using AngryWasp.Serializer.Serializers;
 
 namespace MagellanServer
 {
     public class MainClass
     {
+        private const int DEFAULT_PORT = 15236;
+
         [STAThread]
         public static void Main(string[] args)
         {
@@ -16,10 +21,13 @@ namespace MagellanServer
 
             CommandLineParser cmd = CommandLineParser.Parse(args);
 
+            NodeMapDataStore ds = new NodeMapDataStore();
+
             if (File.Exists("NodeMap.xml"))
             {
                 Log.Instance.Write("Loading node map info");
-                NodeMapDataStore.Load();
+                ds = new ObjectSerializer().Deserialize<NodeMapDataStore>(XDocument.Load("NodeMap.xml"));
+                Log.Instance.Write($"Node map loaded {ds.NodeMap.Count} items from file");
             }
 
             string apiKey = null;
@@ -46,7 +54,13 @@ namespace MagellanServer
 
             GeoLocator.ApiKey = apiKey;
 
-            new RpcListener().Start();
+            int port = DEFAULT_PORT;
+
+            if (cmd["port"] != null)
+				port = new IntSerializer().Deserialize(cmd["port"].Value);
+
+            Log.Instance.Write($"Listening on port {port}");
+            new RpcListener().Start(ds, port);
 
             Task.Delay(0);
         }

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Xml.Linq;
 using AngryWasp.Logger;
 using AngryWasp.Serializer;
@@ -22,6 +24,7 @@ namespace MagellanServer
         public string Version { get; set; } = string.Empty;
 
         [JsonProperty("address")]
+        [SerializerExclude]
         public string Address { get; set; } = string.Empty;
 
         [JsonProperty("time")]
@@ -34,14 +37,15 @@ namespace MagellanServer
 
     public class NodeMapDataStore
     {
-        private static Dictionary<string, NodeMapEntry> nodeMap = new Dictionary<string, NodeMapEntry>();
+        [SerializerInclude]
+        private Dictionary<string, NodeMapEntry> nodeMap = new Dictionary<string, NodeMapEntry>();
+
+        public Dictionary<string, NodeMapEntry> NodeMap => nodeMap;
         
-        public static bool Add(NodeMapEntry e)
+        public bool Add(NodeMapEntry e)
         {
-            //The node map data is keyed by the hash of the ip address. So we need to first get that
             string hash = e.Address.GetHashString();
 
-            //if ip is already in the node map, update the last access time
             if (nodeMap.ContainsKey(hash))
             {
                 Log.Instance.Write("Node map entry updated");
@@ -49,9 +53,6 @@ namespace MagellanServer
             }
             else
             {
-                //if not already in the map, we need to locate the ip
-                //we only add the node to the map if geolocation was successful
-                //most likely reason for failure is exceeding the daily API rate limit
                 float latitude = 0, longitude = 0;
                 if (GeoLocator.Get(e.Address, out latitude, out longitude))
                 {
@@ -65,15 +66,30 @@ namespace MagellanServer
                     return false;
             }
 
-            new ObjectSerializer().Serialize(nodeMap, "NodeMap.xml");
-            Log.Instance.Write("Node map data saved");
             return true;
         }
-
-        public static void Load()
+    
+        public string ToJson()
         {
-            nodeMap = new ObjectSerializer().Deserialize<Dictionary<string, NodeMapEntry>>(XDocument.Load("NodeMap.xml"));
-            Log.Instance.Write("Node map data loaded");
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("[");
+
+            NodeMapEntry[] na = nodeMap.Values.ToArray();
+
+            for (int i = 0; i < na.Length -1; i++)
+            {
+                sb.Append(NodeMapEntryToJson(na[i]));
+                sb.AppendLine(",");
+            }
+
+            sb.AppendLine(NodeMapEntryToJson(na[na.Length - 1]));
+
+            sb.Append("]");
+
+            return sb.ToString();
         }
+
+        private string NodeMapEntryToJson(NodeMapEntry n) =>
+            $"{{\"version\":\"{n.Version}\",\"time\":\"{n.LastAccessTime}\",\"lat\":\"{n.Latitude}\",\"long\":\"{n.Longitude}\"}}";
     }
 }
