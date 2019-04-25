@@ -25,8 +25,7 @@ namespace Atom.Commands
                 string ip = m.ToString();
                 string result;
                 if (!Request.Http($"https://xnv1.getnerva.org/api/setbans.php?ip={ip}&ban=false&time=0", out result) ||
-                    !Request.Http($"https://xnv2.getnerva.org/api/setbans.php?ip={ip}&ban=false&time=0", out result) ||
-                    !Request.Http($"https://xnv3.getnerva.org/api/setbans.php?ip={ip}&ban=false&time=0", out result))
+                    !Request.Http($"https://xnv2.getnerva.org/api/setbans.php?ip={ip}&ban=false&time=0", out result))
                     m2 = $"Sorry, couldn't totally unban IP {ip}";
                 else
                     m2 = $"{ip} has been unbanned";

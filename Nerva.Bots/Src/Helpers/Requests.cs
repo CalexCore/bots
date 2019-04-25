@@ -14,8 +14,7 @@ namespace Nerva.Bots.Helpers
             string[] apiLinks = new string[]
             {
                 "xnv1.getnerva.org",
-                "xnv2.getnerva.org",
-                "xnv3.getnerva.org"
+                "xnv2.getnerva.org"
             };
 
             resultString = null;

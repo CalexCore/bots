@@ -23,9 +23,6 @@ namespace Atom.Commands
             if (Request.Http($"https://xnv2.getnerva.org/api/getbans.php", out temp))
                 result += temp;
 
-            if (Request.Http($"https://xnv3.getnerva.org/api/getbans.php", out temp))
-                result += temp;
-
             string[] split = result.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
             StringBuilder sb = new StringBuilder();
 
@@ -34,7 +31,7 @@ namespace Atom.Commands
 
             File.WriteAllText("/var/www/html/banlist.txt", sb.ToString());
 
-            DiscordResponse.Reply(msg, text: "https://api.getnerva.org/banlist.txt");
+            DiscordResponse.Reply(msg, text: "https://xnv1.getnerva.org/banlist.txt");
         }
     }
 }

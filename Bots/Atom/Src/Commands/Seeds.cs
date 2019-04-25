@@ -18,7 +18,6 @@ namespace Atom.Commands
         {
             NodeInfo seed1 = null;
             NodeInfo seed2 = null;
-            NodeInfo seed3 = null;
 
             string result;
             if (Request.Http($"https://xnv1.getnerva.org/api/getinfo.php", out result))
@@ -26,9 +25,6 @@ namespace Atom.Commands
 
             if (Request.Http($"https://xnv2.getnerva.org/api/getinfo.php", out result))
                 seed2 = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(result).Result;
-
-            if (Request.Http($"https://xnv3.getnerva.org/api/getinfo.php", out result))
-                seed3 = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(result).Result;
 
             var em = new EmbedBuilder()
             .WithAuthor("Seed Node Information", Globals.Client.CurrentUser.GetAvatarUrl())
@@ -38,11 +34,9 @@ namespace Atom.Commands
 
             string s1 = GetSeedInfoString(seed1);
             string s2 = GetSeedInfoString(seed2);
-            string s3 = GetSeedInfoString(seed3);
 
             em.AddField("XNV-1", s1, true);
             em.AddField("XNV-2", s2, true);
-            em.AddField("XNV-3", s3, true);
 
             DiscordResponse.Reply(msg, embed: em.Build());
         }
