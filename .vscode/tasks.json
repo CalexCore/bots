@@ -13,6 +13,17 @@
             },
             "args": ["build", "-c", "Debug"],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build-release",
+            "command": "dotnet",
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "args": ["build", "-c", "Release"],
+            "problemMatcher": "$msCompile"
         }
     ]
 }
