@@ -70,7 +70,7 @@ namespace MagellanServer
 
             if (!Regex.IsMatch(ip, @"^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$"))
             {
-                Log.Instance.Write(Log_Severity.Error, "IP address has incorrect format");
+                Log.Instance.Write(Log_Severity.Error, $"IP address has incorrect format: {ip}");
                 return false;
             }
 
