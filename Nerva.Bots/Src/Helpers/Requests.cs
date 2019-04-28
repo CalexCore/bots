@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using AngryWasp.Helpers;
+using AngryWasp.Logger;
 using Discord;
 using Discord.WebSocket;
 
@@ -29,27 +31,12 @@ namespace Nerva.Bots.Helpers
 
         public static bool Http(string url, out string returnString)
         {
-            try
-            {
-                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
-                req.Method = "GET";
-                HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
-
-                using (Stream stream = resp.GetResponseStream())
-                {
-                    StreamReader reader = new StreamReader(stream, System.Text.Encoding.UTF8);
-                    returnString = reader.ReadToEnd();
-                }
-                    
+            string error = null;
+            if (NetHelper.HttpRequest(url, out returnString, out error))
                 return true;
-            }
-            catch (Exception ex)
-            {
-                Log.Write($"Error attempting HTTP request {url}");
-                Log.WriteNonFatalException(ex);
-                returnString = null;
-                return false;
-            }
+
+            Log.Write(Log_Severity.Error, error);
+            return false;
         }
     }
 

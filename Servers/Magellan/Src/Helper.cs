@@ -32,7 +32,7 @@ namespace MagellanServer
     {
         public static bool HttpRequest(string ip, out string returnString)
         {
-            string url = $"https://api.ipgeolocation.io/ipgeo?apiKey={ApiKey}&ip={ip}&fields=latitude,longitude";
+            string url = $"https://api.ipgeolocation.io/ipgeo?apiKey={ApiKey}&ip={ip}&fields=latitude,longitude,continent_code,country_code2";
 
             try
             {
@@ -59,9 +59,10 @@ namespace MagellanServer
 
         public static string ApiKey { get; set; } = null;
 
-        public static bool Get(string ip, out float latitude, out float longitude)
+        public static bool Get(string ip, out float latitude, out float longitude, out string continentCode, out string countryCode)
         {
             latitude = longitude = 0;
+            continentCode = countryCode = "-";
             if (string.IsNullOrEmpty(ApiKey))
             {
                 Log.Instance.Write(Log_Severity.Error, "Geolocation API key not provided");
@@ -99,6 +100,12 @@ namespace MagellanServer
                     Log.Instance.Write(Log_Severity.Error, "Failed to parse latitude and/or longituide");
                     return false;
                 }
+
+                if (result.continent_code != null && !string.IsNullOrEmpty(result.continent_code.Value))
+                    continentCode = result.continent_code.Value;
+
+                if (result.country_code2 != null && !string.IsNullOrEmpty(result.country_code2.Value))
+                    countryCode = result.country_code2.Value;
 
                 return true;
 

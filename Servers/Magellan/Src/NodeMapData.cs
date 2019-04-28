@@ -33,6 +33,10 @@ namespace MagellanServer
         public float Latitude { get; set; } = 0;
 
         public float Longitude { get; set; } = 0;
+
+        public string ContinentCode { get; set; } = string.Empty;
+
+        public string CountryCode { get; set; } = string.Empty;
     }
 
     public class NodeMapDataStore
@@ -50,15 +54,19 @@ namespace MagellanServer
             {
                 Log.Instance.Write("Node map entry updated");
                 nodeMap[hash].LastAccessTime = e.LastAccessTime;
+                nodeMap[hash].Version = e.Version;
             }
             else
             {
                 float latitude = 0, longitude = 0;
-                if (GeoLocator.Get(e.Address, out latitude, out longitude))
+                string continentCode, countryCode;
+                if (GeoLocator.Get(e.Address, out latitude, out longitude, out continentCode, out countryCode))
                 {
                     e.Address = hash;
                     e.Latitude = latitude;
                     e.Longitude = longitude;
+                    e.ContinentCode = continentCode;
+                    e.CountryCode = countryCode;
                     nodeMap.Add(hash, e);
                     Log.Instance.Write("Node map entry created");
                 }
@@ -90,6 +98,6 @@ namespace MagellanServer
         }
 
         private string NodeMapEntryToJson(NodeMapEntry n) =>
-            $"{{\"version\":\"{n.Version}\",\"time\":\"{n.LastAccessTime}\",\"lat\":\"{n.Latitude}\",\"long\":\"{n.Longitude}\"}}";
+            $"{{\"version\":\"{n.Version}\",\"time\":\"{n.LastAccessTime}\",\"lat\":\"{n.Latitude}\",\"long\":\"{n.Longitude}\",\"cn\":\"{n.ContinentCode}\",\"cc\":\"{n.CountryCode}\"}}";
     }
 }
