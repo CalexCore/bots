@@ -37,16 +37,16 @@ namespace Tools
 
             NodeMapDataStore nmap = new NodeMapDataStore();
 
-            if (File.Exists("nmap.xml"))
+            if (File.Exists("NodeMap.xml"))
             {
                 Log.Instance.Write("Loading node map data from file");
-                nmap = new ObjectSerializer().Deserialize<NodeMapDataStore>(XDocument.Load("nmap.xml"));
+                nmap = new ObjectSerializer().Deserialize<NodeMapDataStore>(XDocument.Load("NodeMap.xml"));
             }
 
             RunList(peerList.GrayList, ref nmap);
             RunList(peerList.WhiteList, ref nmap);
 
-            new ObjectSerializer().Serialize(nmap, "nmap.xml");
+            new ObjectSerializer().Serialize(nmap, "NodeMap.xml");
             Log.Instance.Write($"DONE! {nmap.NodeMap.Count} nodes in map");
         }
 
