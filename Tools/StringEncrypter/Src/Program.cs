@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Security.Cryptography;
 using AngryWasp.Helpers;
 using AngryWasp.Logger;
 using Nerva.Bots.Helpers;
@@ -13,6 +16,24 @@ namespace Tools
         {
             CommandLineParser cmd = CommandLineParser.Parse(args);
             Log.CreateInstance(true);
+
+            if (cmd["random"] != null)
+            {
+                int count = 0;
+                if (!int.TryParse(cmd["random"].Value, out count))
+                    count = 10;
+
+                for (int i = 0; i < count; i++)
+                {
+                    string text = StringHelper.GenerateRandomString(32);
+                    string key = StringHelper.GenerateRandomString(32);
+                    byte[] b64 = Convert.FromBase64String(text.Encrypt(key));
+                    byte[] result = Reduce(Reduce(SHA256.Create().ComputeHash(b64)));
+                    Log.Instance.Write(Log_Severity.None, $"Random {i}: {result.ToHex()}");
+                }
+                
+                return;
+            }
 
             string pw = null;
 
@@ -29,8 +50,12 @@ namespace Tools
 
             if (cmd["encrypt"] != null)
             {
+                string text = cmd["encrypt"].Value;
+                if (File.Exists(text))
+                    text = File.ReadAllText(text);
+                
                 try {
-                    Log.Instance.Write(cmd["encrypt"].Value.Encrypt(pw));
+                    Log.Instance.Write(Log_Severity.None, text.Encrypt(pw));
                 } catch {
                     Log.Instance.Write(Log_Severity.Fatal, "Encryption failed");
                 }
@@ -38,12 +63,26 @@ namespace Tools
 
             if (cmd["decrypt"] != null)
             {
+                string text = cmd["decrypt"].Value;
+                if (File.Exists(text))
+                    text = File.ReadAllText(text);
+
                 try {
-                    Log.Instance.Write(cmd["decrypt"].Value.Decrypt(pw));
+                    Log.Instance.Write(Log_Severity.None, text.Decrypt(pw));
                 } catch {
                     Log.Instance.Write(Log_Severity.Fatal, "Decryption failed");
                 }
             }
+        }
+
+        private static byte[] Reduce(byte[] input)
+        {
+            byte[] output = new byte[input.Length / 2];
+            int x = 0;
+            for (int i = 0; i < input.Length; i += 2)
+                output[x++] = (byte)(input[i] ^ input[i + 1]);
+
+            return output;
         }
     }
 }
