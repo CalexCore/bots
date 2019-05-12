@@ -48,11 +48,31 @@
             "preLaunchTask": "build-debug",
             "args":[
                 //"--url", "http://127.0.0.1:8080/api/getpeerlist.php",
-                "--url", "https://nerva.syzygy.cc/api/getpeerlist.php",
+                //"--url", "https://nerva.syzygy.cc/api/getpeerlist.php",
                 //"--url", "http://xnv1.getnerva.org/api/getpeerlist.php",
                 //"--url", "http://xnv2.getnerva.org/api/getpeerlist.php",
                 "--geo-api-key-file", "${workspaceRoot}/Bin/geo-api-key",
             ]
+        },
+        {
+            "name": "IpListGen",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceRoot}/Bin/Debug/CloudMiningListGen.dll",
+            "cwd": "${workspaceRoot}/Bin",
+            "console": "externalTerminal",
+            "preLaunchTask": "build-debug",
+            "args":["--ip-list", "${workspaceRoot}/Bin/iplist.txt"]
+        },
+        {
+            "name": "RandomKeyGen",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceRoot}/Bin/Debug/StringEncrypter.dll",
+            "cwd": "${workspaceRoot}/Bin",
+            "console": "externalTerminal",
+            "preLaunchTask": "build-debug",
+            "args":["--random"]
         }
     ]
 }

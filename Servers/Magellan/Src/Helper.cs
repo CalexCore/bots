@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Security.Cryptography;
@@ -116,5 +117,10 @@ namespace MagellanServer
                 return false;
             }
         }
+    }
+
+    public static class Config
+    {
+        public static List<string> AllowedKeys { get; set; }
     }
 }

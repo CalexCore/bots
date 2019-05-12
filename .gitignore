@@ -1,7 +1,9 @@
 Bin/encrypt-tokens
 Bin/geo-api-key
 Bin/fusion-keys
+Bin/magellan-api-keys
 Bin/tile
 **/Bin/Release
 **/Bin/Debug
 **/obj
+Tools/CloudMiningListGen

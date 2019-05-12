@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -31,6 +32,7 @@ namespace MagellanServer
             }
 
             string apiKey = null;
+            List<string> allowedKeys = new List<string>();
 
             if (cmd["geo-api-key"] != null)
 			{
@@ -40,6 +42,7 @@ namespace MagellanServer
 
 			if (apiKey == null && cmd["geo-api-key-file"] != null)
 			{
+                //todo: check file exists
 				Log.Instance.Write("Geolocation API key loaded from file");
 				apiKey = File.ReadAllText(cmd["geo-api-key-file"].Value);
 			}
@@ -51,6 +54,13 @@ namespace MagellanServer
 			}
 			else
 				Log.Instance.Write($"Loaded Geolocation API key {apiKey}");
+
+            if (cmd["access-keys"] != null)
+			{
+                //todo: check file exists
+                Log.Instance.Write("Access keys loaded from file");
+				File.ReadAllText(cmd["access-keys"].Value);
+			}    
 
             GeoLocator.ApiKey = apiKey;
 

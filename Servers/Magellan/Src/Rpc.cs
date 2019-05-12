@@ -77,6 +77,27 @@ namespace MagellanServer
                                         ok = true;
                                     }
                                     break;
+                                    case "prune":
+                                    {
+                                        if (json.key == null)
+                                        {
+                                            Log.Instance.Write(Log_Severity.Warning, "No access key provided");
+                                            ok = false;
+                                            break;
+                                        }
+
+                                        if (Config.AllowedKeys.Contains(json.Key))
+                                        {
+                                            Log.Instance.Write(Log_Severity.Warning, "Invalid access key");
+                                            ok = false;
+                                            break;
+                                        }
+
+                                        //todo: prune list
+                                        //prune oldest IP with same geolocation coords (except cloud locations)
+                                        //prune nodes older than 14 days
+                                    }
+                                    break;
                                     default:
                                         Log.Instance.Write($"Invalid request: {json.Method}");
                                     break;
