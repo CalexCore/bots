@@ -36,6 +36,7 @@
             "preLaunchTask": "build-debug",
             "args":[
                 "--geo-api-key-file", "${workspaceRoot}/Bin/geo-api-key",
+                "--access-keys", "${workspaceRoot}/Bin/magellan-api-keys"
             ]
         },
         {
