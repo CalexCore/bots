@@ -75,7 +75,7 @@ namespace Tools
                 }
                 
                 ulong ts = RoundTimestamp(p.LastSeen);
-                NodeMapEntry e = new NodeMapEntry();
+                SubmitParams e = new SubmitParams();
                 e.Address = ip;
                 e.LastAccessTime = ts;
                 e.Version = "0.0.0.0";

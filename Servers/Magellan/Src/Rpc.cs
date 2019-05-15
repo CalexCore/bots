@@ -15,55 +15,53 @@ namespace MagellanServer
         private NodeMapDataStore dataStore = new NodeMapDataStore();
 
         public void Start(NodeMapDataStore ds, int port)
-        { 
+        {
             dataStore = ds;
-            TcpListener listener = new TcpListener(IPAddress.Parse("0.0.0.0"), port);    
-            listener.Start();     
-            Log.Instance.Write("Local endpoint: " + listener.LocalEndpoint);    
+            TcpListener listener = new TcpListener(IPAddress.Parse("0.0.0.0"), port);
+            listener.Start();
+            Log.Instance.Write("Local endpoint: " + listener.LocalEndpoint);
             Log.Instance.Write("RPC server initialized");
 
-            while(true)
+            while (true)
             {
                 if (listener.Pending())
                 {
-                    //Task.Run(() =>
+                    var c = listener.AcceptTcpClient();
+                    c.NoDelay = true;
+                    NetworkStream ns = c.GetStream();
+                    byte[] bytes = new byte[256];
+                    int i = 0;
+                    StringBuilder sb = new StringBuilder();
+
+                    while ((i = ns.Read(bytes, 0, bytes.Length)) != 0)
                     {
-                        var c = listener.AcceptTcpClient();
-                        c.NoDelay = true;
-                        NetworkStream ns = c.GetStream();
-                        byte[] bytes = new byte[256];
-                        int i = 0;
-                        StringBuilder sb = new StringBuilder();
+                        sb.Append(Encoding.ASCII.GetString(bytes, 0, i));
+                        if (!ns.DataAvailable)
+                            break;
+                    }
 
-                        while ((i = ns.Read(bytes, 0, bytes.Length)) != 0)
+                    try
+                    {
+                        //the http standard seperates header and content by a double line break
+                        //so we just take a substring from the first instance of that
+                        string sbs = sb.ToString();
+                        string content = sbs.Substring(sbs.IndexOf("\r\n\r\n")).Trim();
+
+                        dynamic json = JObject.Parse(content);
+                        bool ok = false;
+                        string resultData = null;
+
+                        if (json.method == null)
+                            Log.Instance.Write(Log_Severity.Warning, "No JSON method provided");
+                        else
                         {
-                            sb.Append(Encoding.ASCII.GetString(bytes, 0, i));
-                            if (!ns.DataAvailable)
-                                break;
-                        }
-
-                        try
-                        {
-                            //the http standard seperates header and content by a double line break
-                            //so we just take a substring from the first instance of that
-                            string sbs = sb.ToString();
-                            string content = sbs.Substring(sbs.IndexOf("\r\n\r\n")).Trim();
-
-                            dynamic json = JObject.Parse(content);
-                            bool ok = false;
-                            string resultData = null;
-
-                            if (json.method == null)
-                                Log.Instance.Write(Log_Severity.Warning, "No JSON method provided");
-                            else
+                            Log.Instance.Write($"Received new request: {json.method}");
+                            switch (json.method.Value)
                             {
-                                Log.Instance.Write($"Received new request: {json.method}");
-                                switch (json.method.Value)
-                                {
-                                    case "submit":
-                                    {   
-                                        NodeMapEntry nme = JsonConvert.DeserializeObject<RpcRequest<NodeMapEntry>>(content).Params;
-                                        ok = dataStore.Add(nme);
+                                case "submit":
+                                    {
+                                        SubmitParams sp = JsonConvert.DeserializeObject<RpcRequest<SubmitParams>>(content).Params;
+                                        ok = dataStore.Add(sp);
                                         if (ok)
                                         {
                                             new ObjectSerializer().Serialize(dataStore, "NodeMap.xml");
@@ -71,13 +69,14 @@ namespace MagellanServer
                                         }
                                     }
                                     break;
-                                    case "fetch":
+                                case "fetch":
                                     {
-                                        resultData = dataStore.ToJson();
+                                        FetchParams fp = JsonConvert.DeserializeObject<RpcRequest<FetchParams>>(content).Params;
+                                        resultData = dataStore.Fetch(fp);
                                         ok = true;
                                     }
                                     break;
-                                    case "prune":
+                                case "prune":
                                     {
                                         if (json.key == null)
                                         {
@@ -93,35 +92,37 @@ namespace MagellanServer
                                             break;
                                         }
 
-                                        //todo: prune list
-                                        //prune oldest IP with same geolocation coords (except cloud locations)
-                                        //prune nodes older than 14 days
+                                        PruneParams pp = JsonConvert.DeserializeObject<RpcRequest<PruneParams>>(content).Params;
+                                        ok = dataStore.Prune(pp);
+                                        if (ok && !pp.DryRun)
+                                        {
+                                            new ObjectSerializer().Serialize(dataStore, "NodeMap.xml");
+                                            Log.Instance.Write("Node map data saved");
+                                        }
                                     }
                                     break;
-                                    default:
-                                        Log.Instance.Write($"Invalid request: {json.Method}");
+                                default:
+                                    Log.Instance.Write($"Invalid request: {json.Method}");
                                     break;
-                                }
                             }
-
-                            if (ok)
-                            {
-                                if (resultData == null)
-                                    ns.Write(Encoding.ASCII.GetBytes("{\"status\":\"OK\"}\r\n"));
-                                else
-                                    ns.Write(Encoding.ASCII.GetBytes($"{{\"status\":\"OK\",\"result\":{resultData}}}\r\n"));
-                            }
-                            else
-                                ns.Write(Encoding.ASCII.GetBytes("{\"status\":\"ERROR\"}\r\n"));
-
-                            ns.Close();
                         }
-                        catch
+
+                        if (ok)
                         {
-                            ns.Write(Encoding.ASCII.GetBytes("{\"status\":\"ERROR\"}\r\n"));
-                            ns.Close();
+                            if (resultData == null)
+                                ns.Write(Encoding.ASCII.GetBytes("{\"status\":\"OK\"}\r\n"));
+                            else
+                                ns.Write(Encoding.ASCII.GetBytes($"{{\"status\":\"OK\",\"result\":{resultData}}}\r\n"));
                         }
-                        
+                        else
+                            ns.Write(Encoding.ASCII.GetBytes("{\"status\":\"ERROR\"}\r\n"));
+
+                        ns.Close();
+                    }
+                    catch
+                    {
+                        ns.Write(Encoding.ASCII.GetBytes("{\"status\":\"ERROR\"}\r\n"));
+                        ns.Close();
                     }
                 }
                 else

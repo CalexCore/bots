@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,7 +19,7 @@ namespace MagellanServer
         public T Params { get; set; }
     }
 
-    public class NodeMapEntry
+    public class SubmitParams
     {
         [JsonProperty("version")]
         public string Version { get; set; } = string.Empty;
@@ -39,14 +40,38 @@ namespace MagellanServer
         public string CountryCode { get; set; } = string.Empty;
     }
 
+    public class FetchParams
+    {
+        [JsonProperty("time")]
+        public ulong Time { get; set; } = 0;
+
+        [JsonProperty("limit")]
+        public ulong Limit { get; set; } = 0;
+    }
+
+    public class PruneParams
+    {
+        [JsonProperty("time")]
+        public ulong Time { get; set; } = 0;
+
+        [JsonProperty("limit")]
+        public ulong Limit { get; set; } = 0;
+
+        [JsonProperty("dryrun")]
+        public bool DryRun { get; set; } = true;
+
+        [JsonProperty("key")]
+        public string Key { get; set; } = string.Empty;
+    }
+
     public class NodeMapDataStore
     {
         [SerializerInclude]
-        private Dictionary<string, NodeMapEntry> nodeMap = new Dictionary<string, NodeMapEntry>();
+        private Dictionary<string, SubmitParams> nodeMap = new Dictionary<string, SubmitParams>();
 
-        public Dictionary<string, NodeMapEntry> NodeMap => nodeMap;
-        
-        public bool Add(NodeMapEntry e)
+        public Dictionary<string, SubmitParams> NodeMap => nodeMap;
+
+        public bool Add(SubmitParams e)
         {
             string hash = e.Address.GetHashString();
 
@@ -76,28 +101,64 @@ namespace MagellanServer
 
             return true;
         }
-    
-        public string ToJson()
+
+        public bool Prune(PruneParams pp)
         {
+            ulong limit = pp.Time - (86400 * pp.Limit);
+
+            int count = 0;
+
+            try
+            {
+                if (pp.DryRun)
+                {
+                    foreach (var n in nodeMap.Values)
+                        if (n.LastAccessTime < limit)
+                            ++count;
+
+                    Log.Instance.Write($"{count} nodes older than {pp.Limit} days");
+                }
+                else
+                {
+                    Dictionary<string, SubmitParams> prunedMap = new Dictionary<string, SubmitParams>();
+
+                    foreach (var n in nodeMap)
+                        if (n.Value.LastAccessTime < limit)
+                            ++count;
+                        else
+                            prunedMap.Add(n.Key, n.Value);
+
+                    nodeMap = prunedMap;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.Instance.WriteNonFatalException(ex);
+                return false;
+            }
+        }
+
+        public string Fetch(FetchParams fp)
+        {
+            ulong limit = fp.Time - (86400 * fp.Limit);
+
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("[");
 
-            NodeMapEntry[] na = nodeMap.Values.ToArray();
+            SubmitParams[] n = nodeMap.Values.ToArray();
 
-            for (int i = 0; i < na.Length -1; i++)
+            for (int i = 0; i < n.Length; i++)
             {
-                sb.Append(NodeMapEntryToJson(na[i]));
-                sb.AppendLine(",");
+                if (n[i].LastAccessTime >= limit)
+                    sb.AppendLine(NodeMapEntryToJson(n[i]) + ",");
             }
 
-            sb.AppendLine(NodeMapEntryToJson(na[na.Length - 1]));
-
-            sb.Append("]");
-
-            return sb.ToString();
+            return sb.ToString().TrimEnd(',') + "]";
         }
 
-        private string NodeMapEntryToJson(NodeMapEntry n) =>
+        private string NodeMapEntryToJson(SubmitParams n) =>
             $"{{\"version\":\"{n.Version}\",\"time\":\"{n.LastAccessTime}\",\"lat\":\"{n.Latitude}\",\"long\":\"{n.Longitude}\",\"cn\":\"{n.ContinentCode}\",\"cc\":\"{n.CountryCode}\"}}";
     }
 }
