@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace Atom.Commands
 {
-    [Command("coingecko", "Get info from CoinGecko")]
+    //[Command("coingecko", "Get info from CoinGecko")]
     public class CoinGecko : ICommand
     {
         public void Process(SocketUserMessage msg)

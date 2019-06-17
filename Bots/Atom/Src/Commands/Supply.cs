@@ -1,5 +1,3 @@
-using System;
-using Atom;
 using Discord.WebSocket;
 using Nerva.Bots.Helpers;
 using Nerva.Bots.Plugin;
@@ -13,7 +11,7 @@ namespace Atom.Commands
         public void Process(SocketUserMessage msg)
         {
             string result;
-            if (Request.Api("getgeneratedcoins", msg.Channel, out result))
+            if (Request.Api(AtomBotConfig.SeedNodes, "getgeneratedcoins", msg.Channel, out result))
             {
                 ulong coins = JsonConvert.DeserializeObject<JsonResult<GetGeneratedCoins>>(result).Result.Coins;
                 DiscordResponse.Reply(msg, text: $"Current Supply: {coins.FromAtomicUnits()}");

@@ -1,7 +1,3 @@
-using System;
-using System.IO;
-using System.Net;
-using System.Threading.Tasks;
 using AngryWasp.Helpers;
 using AngryWasp.Logger;
 using Discord;
@@ -11,18 +7,12 @@ namespace Nerva.Bots.Helpers
 {
     public class Request
     {
-        public static bool Api(string method, ISocketMessageChannel channel, out string resultString)
+        public static bool Api(string[] apiLinks, string method, ISocketMessageChannel channel, out string resultString)
         {
-            string[] apiLinks = new string[]
-            {
-                "xnv1.getnerva.org",
-                "xnv2.getnerva.org"
-            };
-
             resultString = null;
 
             for (int i = 0; i < apiLinks.Length; i++)
-                if (Http($"https://{apiLinks[i]}/api/{method}.php", out resultString))
+                if (Http($"{apiLinks[i]}/api/{method}.php", out resultString))
                     return true;
 
             channel.SendMessageAsync("Sorry... All API's are down. The zombie apocalyse is upon us! :scream:");

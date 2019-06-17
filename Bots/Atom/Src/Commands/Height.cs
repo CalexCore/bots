@@ -12,7 +12,7 @@ namespace Atom.Commands
         public void Process(SocketUserMessage msg)
         {
             string result;
-            if (Request.Api("getblockcount", msg.Channel, out result))
+            if (Request.Api(AtomBotConfig.SeedNodes, "getblockcount", msg.Channel, out result))
             {
                 ulong count = JsonConvert.DeserializeObject<JsonResult<GetBlockCount>>(result).Result.Count;
                 DiscordResponse.Reply(msg, text: $"Current height: {count}");

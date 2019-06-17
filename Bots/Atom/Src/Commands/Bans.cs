@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Atom;
@@ -15,23 +16,28 @@ namespace Atom.Commands
         public void Process(SocketUserMessage msg)
         {
             string result = string.Empty;
-            string temp;
+            
+            //Use a HashSet here as the adding items is slower, but lookups to check for dups are 
+            //orders of magnitude faster.
+            HashSet<string> banList = new HashSet<string>();
 
-            if (Request.Http($"https://xnv1.getnerva.org/api/getbans.php", out temp))
-                result += temp;
+            foreach (var sn in AtomBotConfig.SeedNodes)
+                if (Request.Http($"{sn}api/getbans.php", out result))
+                {
+                    string[] split = result.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string s in split)
+                        if (!banList.Contains(s))
+                            banList.Add(s);
+                }
 
-            if (Request.Http($"https://xnv2.getnerva.org/api/getbans.php", out temp))
-                result += temp;
-
-            string[] split = result.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
+            //Discord has a 2000 character message limit. It may be possible to exceed this if the ban list is large
+            //So a mod to this code to split the ban list into smaller chunks may be appropriate, however the risk of 
+            //exceeding the character limit is small, making this a job for another day
             StringBuilder sb = new StringBuilder();
-
-            foreach (string s in split)
+            foreach (string s in banList)
                 sb.AppendLine(s);
 
-            File.WriteAllText("/var/www/html/banlist.txt", sb.ToString());
-
-            DiscordResponse.Reply(msg, text: "https://xnv1.getnerva.org/banlist.txt");
+            DiscordResponse.Reply(msg, text: sb.ToString());
         }
     }
 }
