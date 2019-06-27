@@ -1,5 +1,4 @@
 using System;
-using Atom;
 using Discord.WebSocket;
 using Nerva.Bots.Helpers;
 using Nerva.Bots.Plugin;
@@ -13,7 +12,7 @@ namespace Atom.Commands
         public void Process(SocketUserMessage msg)
         {
             string result;
-            if (Request.Api("getinfo", msg.Channel, out result))
+            if (Request.Api(AtomBotConfig.SeedNodes, "getinfo", msg.Channel, out result))
             {
                 float hr = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(result).Result.Difficulty / 60.0f;
                 string formatted = $"{hr} h/s";

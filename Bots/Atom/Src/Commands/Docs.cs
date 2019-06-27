@@ -1,12 +1,10 @@
 using System;
 using System.IO;
-using Atom;
 using Discord;
 using Discord.WebSocket;
 using Nerva.Bots;
 using Nerva.Bots.Helpers;
 using Nerva.Bots.Plugin;
-using Newtonsoft.Json;
 
 namespace Atom.Commands
 {

@@ -1,7 +1,3 @@
-using System;
-using System.IO;
-using System.Text;
-using Atom;
 using Discord;
 using Discord.WebSocket;
 using Nerva.Bots;
@@ -16,27 +12,35 @@ namespace Atom.Commands
     {
         public void Process(SocketUserMessage msg)
         {
-            NodeInfo seed1 = null;
-            NodeInfo seed2 = null;
-
-            string result;
-            if (Request.Http($"https://xnv1.getnerva.org/api/getinfo.php", out result))
-                seed1 = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(result).Result;
-
-            if (Request.Http($"https://xnv2.getnerva.org/api/getinfo.php", out result))
-                seed2 = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(result).Result;
-
             var em = new EmbedBuilder()
             .WithAuthor("Seed Node Information", Globals.Client.CurrentUser.GetAvatarUrl())
             .WithDescription("The latest seed node status")
             .WithColor(Color.DarkMagenta)
             .WithThumbnailUrl(Globals.Client.CurrentUser.GetAvatarUrl());
 
-            string s1 = GetSeedInfoString(seed1);
-            string s2 = GetSeedInfoString(seed2);
+            int x = 0;
+            foreach (var s in AtomBotConfig.SeedNodes)
+            {
+                ++x;
 
-            em.AddField("XNV-1", s1, true);
-            em.AddField("XNV-2", s2, true);
+                try
+                {
+                    NodeInfo ni = null;
+                    string result;
+                    if (Request.Http($"{s}/api/getinfo.php", out result))
+                        ni = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(result).Result;
+
+                    string si = GetSeedInfoString(ni);
+
+                    em.AddField($"Seed {x}", si, true);
+                }
+                catch
+                {
+                    em.AddField($"Seed {x}", "Not Available", true);
+                    continue;
+                }
+                
+            }
 
             DiscordResponse.Reply(msg, embed: em.Build());
         }

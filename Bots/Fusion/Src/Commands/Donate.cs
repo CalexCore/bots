@@ -1,10 +1,8 @@
-using System;
 using Discord;
 using Discord.WebSocket;
 using Nerva.Bots;
 using Nerva.Bots.Helpers;
 using Nerva.Bots.Plugin;
-using Newtonsoft.Json;
 
 namespace Fusion.Commands
 {

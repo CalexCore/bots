@@ -1,0 +1,15 @@
+{
+    "accounts": [{
+            "index": 0,
+            "name": "Donation account 1",
+            "address": "wallet address goes here",
+            "display": true
+        },
+        {
+            "index": 1,
+            "name": "Donation account 2",
+            "address": "wallet address goes here",
+            "display": false
+        }
+    ]
+}

@@ -1,7 +1,5 @@
 using System.Text.RegularExpressions;
-using Discord;
 using Discord.WebSocket;
-using Nerva.Bots;
 using Nerva.Bots.Helpers;
 using Nerva.Bots.Plugin;
 
@@ -21,16 +19,27 @@ namespace Atom.Commands
             }
             foreach (var m in matches)
             {
-                string m2;
+                bool partialFail = false;
+                bool allFail = true;
                 string ip = m.ToString();
-                string result;
-                if (!Request.Http($"https://xnv1.getnerva.org/api/setbans.php?ip={ip}&ban=false&time=0", out result) ||
-                    !Request.Http($"https://xnv2.getnerva.org/api/setbans.php?ip={ip}&ban=false&time=0", out result))
-                    m2 = $"Sorry, couldn't totally unban IP {ip}";
-                else
-                    m2 = $"{ip} has been unbanned";
+                string result = null;
 
-                DiscordResponse.Reply(msg, text: m2);
+                foreach (var s in AtomBotConfig.SeedNodes)
+                {
+                    if (Request.Http($"{s}/api/setbans.php?ip={ip}&ban=false&time=0", out result))
+                        allFail = false;
+                    else
+                        partialFail = true;
+                }
+
+                if (allFail)
+                    result = $"An error occurred attempting to unban IP {ip}";
+                else if (partialFail)
+                    result = $"IP {ip} could not be unbanned from all seed nodes";
+                else
+                    result = $"IP {ip} unbanned successfully";
+
+                DiscordResponse.Reply(msg, text: result);
             }
         }
     }

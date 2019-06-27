@@ -64,10 +64,10 @@ namespace Fusion
 			else
 			{
 				Console.WriteLine("Please enter the donation wallet password");
-				walletPassword = Console.ReadLine();
+				walletPassword = PasswordPrompt.Get();
 
 				Console.WriteLine("Please enter the payment id encryption key");
-				cfg.DonationPaymentIdKey = Console.ReadLine();
+				cfg.DonationPaymentIdKey = PasswordPrompt.Get();
 			}
 
 			if (cmd["wallet"] != null)

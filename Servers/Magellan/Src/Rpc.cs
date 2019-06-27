@@ -2,7 +2,6 @@ using System.Text;
 using System.Net.Sockets;
 using System.Net;
 using System.Threading;
-using System.Threading.Tasks;
 using AngryWasp.Logger;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
