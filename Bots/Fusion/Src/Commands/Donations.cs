@@ -24,7 +24,7 @@ namespace Fusion.Commands
             new GetAccounts((GetAccountsResponseData result) =>
             {
                 balances = result;
-            }, null, cfg.WalletPort).Run();
+            }, null, cfg.WalletHost, cfg.WalletPort).Run();
 
             if (balances == null)
             {
@@ -46,7 +46,7 @@ namespace Fusion.Commands
                 }, (GetTransfersResponseData result) =>
                 {
                     transfers.Add(result);
-                }, null, cfg.WalletPort).Run();
+                }, null, cfg.WalletHost, cfg.WalletPort).Run();
             }
 
             if (cfg.AccountJson.Accounts.Length != transfers.Count)

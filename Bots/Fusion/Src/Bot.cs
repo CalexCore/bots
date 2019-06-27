@@ -21,6 +21,8 @@ namespace Fusion
         public ulong BotChannelID => 466873635638870016;
         public string CmdPrefix => "$";
 
+		public string WalletHost { get; } = "http://127.0.0.1";
+
         public uint WalletPort { get; set; } = (uint)MathHelper.Random.NextInt(10000, 50000);
 
         public AccountJson AccountJson { get; set; } = null;
@@ -85,7 +87,7 @@ namespace Fusion
 			}, (RequestError error) => {
 				Log.Write("Failed to load wallet");
 				Environment.Exit(1);
-			}, cfg.WalletPort).Run();
+			}, cfg.WalletHost, cfg.WalletPort).Run();
         }
     }
 }
