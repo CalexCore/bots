@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using Atom;
 using Discord.WebSocket;
 using Nerva.Bots.Helpers;
+using Nerva.Bots.Plugin;
 using Newtonsoft.Json;
 
 namespace Atom.Commands
