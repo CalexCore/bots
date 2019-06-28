@@ -39,14 +39,6 @@ namespace Fusion
 
         public void Init(CommandLineParser cmd)
         {
-            Process[] pl = Process.GetProcessesByName("nerva-wallet-rpc");
-
-            foreach (var p in pl)
-            {
-                p.Kill();
-                p.WaitForExit();
-            }
-
             if (cmd["port"] != null)
 				cfg.WalletPort = uint.Parse(cmd["port"].Value);
 
@@ -56,7 +48,7 @@ namespace Fusion
 			if (cmd["key-file"] != null)
 			{
 				string[] keys = File.ReadAllLines(cmd["key-file"].Value);
-				keyFilePassword = PasswordPrompt.Get();
+				keyFilePassword = PasswordPrompt.Get("Please enter the key file decryption password");
 
 				walletPassword = keys[0].Decrypt(keyFilePassword);
 				cfg.DonationPaymentIdKey = keys[1].Decrypt(keyFilePassword);
@@ -65,11 +57,8 @@ namespace Fusion
 			}
 			else
 			{
-				Console.WriteLine("Please enter the donation wallet password");
-				walletPassword = PasswordPrompt.Get();
-
-				Console.WriteLine("Please enter the payment id encryption key");
-				cfg.DonationPaymentIdKey = PasswordPrompt.Get();
+				walletPassword = PasswordPrompt.Get("Please enter the donation wallet password");
+				cfg.DonationPaymentIdKey = PasswordPrompt.Get("Please enter the payment id encryption key");
 			}
 
 			if (cmd["wallet"] != null)
