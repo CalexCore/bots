@@ -8,7 +8,7 @@ using Nerva.Bots.Plugin;
 
 namespace Atom.Commands
 {
-    [Command("docs", "Get some useful docs")]
+    //[Command("docs", "Get some useful docs")]
     public class Docs : ICommand
     {
         public void Process(SocketUserMessage msg)
