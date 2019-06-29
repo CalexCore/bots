@@ -10,7 +10,7 @@ namespace Fusion
 
         public static async Task PublicReply(SocketUserMessage userMsg, string text, Embed embed = null) => await Reply(userMsg, true, text, embed);
 
-        public static async Task PrivateReply(SocketUserMessage userMsg, string text, Embed embed) => await Reply(userMsg, false, text, embed);
+        public static async Task PrivateReply(SocketUserMessage userMsg, string text, Embed embed = null) => await Reply(userMsg, false, text, embed);
 
         public static async Task SendPrivateReply(SocketUser userMsg, string text, Embed embed = null) => await Discord.UserExtensions.SendMessageAsync(userMsg, text, false, embed);
 

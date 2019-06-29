@@ -1,18 +1,6 @@
-using System;
-using System.IO;
 using System.Threading.Tasks;
-using System.Timers;
 using AngryWasp.Helpers;
-using Discord;
-using Discord.WebSocket;
-using System.Linq;
-using System.Collections.Generic;
 using Nerva.Bots.Plugin;
-using Nerva.Bots.Helpers;
-using Nerva.Bots;
-using Newtonsoft.Json;
-using System.Text.RegularExpressions;
-using System.Text;
 
 namespace Atom
 {
@@ -35,6 +23,8 @@ namespace Atom
     {
         private AtomBotConfig cfg = new AtomBotConfig();
 
+        public IBotConfig Config => cfg;
+
         public void Init(CommandLineParser cmd)
         {
         }
@@ -43,7 +33,5 @@ namespace Atom
         {
             return Task.CompletedTask;
         }
-
-        public IBotConfig Config => cfg;
     }
 }

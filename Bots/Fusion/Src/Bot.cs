@@ -1,19 +1,17 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using AngryWasp.Helpers;
-using Discord.WebSocket;
-using Nerva.Bots.Helpers;
 using Nerva.Bots.Plugin;
 using Nerva.Rpc;
 using Nerva.Rpc.Wallet;
 using Newtonsoft.Json;
 using Log = Nerva.Bots.Helpers.Log;
+using System.Collections.Generic;
 
 namespace Fusion
 {
-     public class FusionBotConfig : IBotConfig
+    public class FusionBotConfig : IBotConfig
     {
         public ulong OwnerID => 407511685134549003;
         public ulong ServerID => 439649936414474256;
@@ -23,11 +21,15 @@ namespace Fusion
 
 		public string WalletHost { get; } = "http://127.0.0.1";
 
-        public uint WalletPort { get; set; } = (uint)MathHelper.Random.NextInt(10000, 50000);
+        public uint DonationWalletPort { get; set; } = (uint)MathHelper.Random.NextInt(10000, 50000);
+
+		public uint UserWalletPort { get; set; } = (uint)MathHelper.Random.NextInt(10000, 50000);
 
         public AccountJson AccountJson { get; set; } = null;
 
         public string DonationPaymentIdKey { get; set; } = null;
+
+		public Dictionary<ulong, uint> UserWalletIndices { get; } = new Dictionary<ulong, uint>();
     }
 
     public class FusionBot : IBot
@@ -39,44 +41,88 @@ namespace Fusion
 
         public void Init(CommandLineParser cmd)
         {
-            if (cmd["port"] != null)
-				cfg.WalletPort = uint.Parse(cmd["port"].Value);
+            if (cmd["donation-wallet-port"] != null)
+				cfg.DonationWalletPort = uint.Parse(cmd["donation-wallet-port"].Value);
 
-			string walletFile = string.Empty, walletPassword = string.Empty;
-			string keyFilePassword = null;
+			if (cmd["user-wallet-port"] != null)
+				cfg.UserWalletPort = uint.Parse(cmd["user-wallet-port"].Value);
+
+			string donationWalletFile = string.Empty, donationWalletPassword = string.Empty;
+			string userWalletFile = string.Empty, userWalletPassword = string.Empty;
 
 			if (cmd["key-file"] != null)
 			{
 				string[] keys = File.ReadAllLines(cmd["key-file"].Value);
-				keyFilePassword = PasswordPrompt.Get("Please enter the key file decryption password");
+				string keyFilePassword = PasswordPrompt.Get("Please enter the key file decryption password");
 
-				walletPassword = keys[0].Decrypt(keyFilePassword);
-				cfg.DonationPaymentIdKey = keys[1].Decrypt(keyFilePassword);
+				donationWalletPassword = keys[0].Decrypt(keyFilePassword);
+				userWalletPassword = keys[1].Decrypt(keyFilePassword);
+				cfg.DonationPaymentIdKey = keys[2].Decrypt(keyFilePassword);
 
 				keyFilePassword = null;
 			}
 			else
 			{
-				walletPassword = PasswordPrompt.Get("Please enter the donation wallet password");
+				donationWalletPassword = PasswordPrompt.Get("Please enter the donation wallet password");
+				userWalletPassword = PasswordPrompt.Get("Please enter the user wallet password");
 				cfg.DonationPaymentIdKey = PasswordPrompt.Get("Please enter the payment id encryption key");
 			}
 
-			if (cmd["wallet"] != null)
-				walletFile = cmd["wallet"].Value;
+			if (cmd["donation-wallet-file"] != null)
+				donationWalletFile = cmd["donation-wallet-file"].Value;
 
-			string jsonFile = Path.Combine(Environment.CurrentDirectory, $"Wallets/{walletFile}.json");
+			if (cmd["user-wallet-file"] != null)
+				userWalletFile = cmd["user-wallet-file"].Value;
+
+			string jsonFile = Path.Combine(Environment.CurrentDirectory, $"Wallets/{donationWalletFile}.json");
 			Log.Write($"Loading Wallet JSON: {jsonFile}");
 			cfg.AccountJson = JsonConvert.DeserializeObject<AccountJson>(File.ReadAllText(jsonFile));
 
-			new OpenWallet(new OpenWalletRequestData {
-				FileName = walletFile,
-				Password = walletPassword
-			}, (string result) => {
+			new OpenWallet(new OpenWalletRequestData 
+			{
+				FileName = donationWalletFile,
+				Password = donationWalletPassword
+			},
+			(string result) => 
+			{
 				Log.Write("Wallet loaded");
-			}, (RequestError error) => {
-				Log.Write("Failed to load wallet");
+			},
+			(RequestError error) => 
+			{
+				Log.Write("Failed to load donation wallet");
 				Environment.Exit(1);
-			}, cfg.WalletHost, cfg.WalletPort).Run();
+			}, 
+			cfg.WalletHost, cfg.DonationWalletPort).Run();
+
+			new OpenWallet(new OpenWalletRequestData {
+				FileName = userWalletFile,
+				Password = userWalletPassword
+			},
+			(string r1) =>
+			{
+				Log.Write("Wallet loaded");
+				new GetAccounts(null, (GetAccountsResponseData r2) =>
+				{
+					foreach (var a in r2.Accounts)
+					{
+						ulong userId = ulong.Parse(a.Tag);
+						cfg.UserWalletIndices.Add(userId, a.Index);
+						Log.Write($"Loaded wallet for user: {a.Tag}");
+					}
+				},
+				(RequestError error) =>
+				{
+					Log.Write("Failed to load user wallet");
+					Environment.Exit(1);
+				},
+				cfg.WalletHost, cfg.UserWalletPort).Run();
+			},
+			(RequestError error) =>
+			{
+				Log.Write("Failed to load user wallet");
+				Environment.Exit(1);
+			},
+			cfg.WalletHost, cfg.UserWalletPort).Run();
         }
     }
 }

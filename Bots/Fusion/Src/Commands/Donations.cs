@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +7,6 @@ using Nerva.Bots;
 using Nerva.Bots.Helpers;
 using Nerva.Bots.Plugin;
 using Nerva.Rpc.Wallet;
-using Newtonsoft.Json;
 
 namespace Fusion.Commands
 {
@@ -20,11 +18,6 @@ namespace Fusion.Commands
             FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
             GetAccountsResponseData balances = null;
             List<GetTransfersResponseData> transfers = new List<GetTransfersResponseData>();
-
-            new GetAccounts((GetAccountsResponseData result) =>
-            {
-                balances = result;
-            }, null, cfg.WalletHost, cfg.WalletPort).Run();
 
             if (balances == null)
             {
@@ -46,7 +39,7 @@ namespace Fusion.Commands
                 }, (GetTransfersResponseData result) =>
                 {
                     transfers.Add(result);
-                }, null, cfg.WalletHost, cfg.WalletPort).Run();
+                }, null, cfg.WalletHost, cfg.DonationWalletPort).Run();
             }
 
             if (cfg.AccountJson.Accounts.Length != transfers.Count)

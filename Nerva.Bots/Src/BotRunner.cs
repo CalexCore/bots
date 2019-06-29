@@ -66,7 +66,7 @@ namespace Nerva.Bots
             if (cmd["password"] != null)
                 pw = cmd["password"].Value;
             else
-                pw = PasswordPrompt.Get();
+                pw = PasswordPrompt.Get("Please enter your token decryption password");
 
 			try {
 				decryptedToken = token.Decrypt(pw);

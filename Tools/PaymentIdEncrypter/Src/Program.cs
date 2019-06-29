@@ -7,7 +7,6 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Modes;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Engines;
-using Nerva.Bots.Helpers;
 using Log = AngryWasp.Logger.Log;
 
 namespace Tools
