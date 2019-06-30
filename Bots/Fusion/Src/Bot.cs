@@ -105,9 +105,15 @@ namespace Fusion
 				{
 					foreach (var a in r2.Accounts)
 					{
-						ulong userId = ulong.Parse(a.Tag);
-						cfg.UserWalletIndices.Add(userId, a.Index);
-						Log.Write($"Loaded wallet for user: {a.Tag}");
+						ulong uid = 0;
+						
+						if (ulong.TryParse(a.Label, out uid))
+						{
+							cfg.UserWalletIndices.Add(uid, a.Index);
+							Log.Write($"Loaded wallet for user: {a.Label}");
+						}
+						else
+							Log.Write($"Account index {a.Index} is not associated with a user");
 					}
 				},
 				(RequestError error) =>

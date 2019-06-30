@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Nerva.Bots;
@@ -18,6 +19,11 @@ namespace Fusion.Commands
             FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
             GetAccountsResponseData balances = null;
             List<GetTransfersResponseData> transfers = new List<GetTransfersResponseData>();
+
+            new GetAccounts(null, (GetAccountsResponseData result) =>
+            {
+                balances = result;
+            }, null, cfg.WalletHost, cfg.DonationWalletPort).Run();
 
             if (balances == null)
             {
