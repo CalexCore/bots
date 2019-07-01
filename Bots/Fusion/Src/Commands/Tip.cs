@@ -10,7 +10,7 @@ using Log = Nerva.Bots.Helpers.Log;
 
 namespace Fusion.Commands
 {
-    [Command("tip", "Semd someone some coins")]
+    [Command("tip", "Send someone some coins")]
     public class Tip : ICommand
     {
         public void Process(SocketUserMessage msg)
