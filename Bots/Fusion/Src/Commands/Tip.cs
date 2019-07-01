@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Discord;
 using Discord.WebSocket;
 using Nerva.Bots;
 using Nerva.Bots.Helpers;
@@ -46,14 +47,16 @@ namespace Fusion.Commands
                         },
                         (TransferResponseData r) =>
                         {
-                            Sender.PrivateReply(msg, $"You sent {r.Amount.FromAtomicUnits()} xnv to {m.Mention} with a fee of {r.Fee.FromAtomicUnits()} xnv\r\n{r.TxHash}").Wait();
-                            
+                            Sender.SendPrivateMessage(Globals.Client.GetUser(msg.Author.Id), $"You sent {r.Amount.FromAtomicUnits()} xnv to {m.Mention} with a fee of {r.Fee.FromAtomicUnits()} xnv\r\n{r.TxHash}").Wait();
+                            msg.AddReactionAsync(new Emoji("💸"));
+
                             if (m.Id != cfg.BotID) //exception thrown if trying to send a DM to fusion, so skip
                                 Sender.SendPrivateMessage(Globals.Client.GetUser(m.Id), $"{msg.Author.Mention} sent you {r.Amount.FromAtomicUnits()} xnv").Wait();
                         },
                         (RequestError e) =>
                         {
-                            Sender.PrivateReply(msg, "Oof. No good. You are going to have to try again later.").Wait();
+                            Sender.SendPrivateMessage(Globals.Client.GetUser(msg.Author.Id), "Oof. No good. You are going to have to try again later.").Wait();
+                            msg.AddReactionAsync(new Emoji("🆘"));
                         },
                         cfg.WalletHost, cfg.UserWalletPort).Run();
                     }
