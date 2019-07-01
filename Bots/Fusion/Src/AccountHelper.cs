@@ -5,6 +5,7 @@ using Nerva.Bots;
 using Nerva.Rpc;
 using Nerva.Rpc.Wallet;
 using System.Linq;
+using System;
 
 namespace Fusion
 {
@@ -26,7 +27,7 @@ namespace Fusion
             (CreateAccountResponseData r) =>
             {
                 Sender.PrivateReply(msg, $"You now have a new account. You can make a deposit to\r\n`{r.Address}`").Wait();
-                cfg.UserWalletIndices.Add(id, r.Index);
+                cfg.UserWalletCache.Add(id, new Tuple<uint, string>(r.Index, r.Address));
             },
             (RequestError e) =>
             {

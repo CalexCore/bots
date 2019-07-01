@@ -1,0 +1,69 @@
+using System.Collections.Generic;
+using Discord.WebSocket;
+using Nerva.Bots;
+using Nerva.Bots.Helpers;
+using Nerva.Bots.Plugin;
+using Nerva.Rpc;
+using Nerva.Rpc.Wallet;
+using Log = Nerva.Bots.Helpers.Log;
+
+namespace Fusion.Commands
+{
+    [Command("tip", "Semd someone some coins")]
+    public class Tip : ICommand
+    {
+        public void Process(SocketUserMessage msg)
+        {
+            FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
+
+            if (!cfg.UserWalletCache.ContainsKey(msg.Author.Id))
+                AccountHelper.CreateNewAccount(msg);
+            else
+            {
+                double amount;
+                if (!AccountHelper.ParseAmountFromMessage(msg, out amount))
+                {
+                    Sender.PrivateReply(msg, "Oof. No good. You didn't say how much you want to tip.").Wait();
+                    return;
+                }
+
+                uint accountIndex = cfg.UserWalletCache[msg.Author.Id].Item1;
+
+                //send one at a time in case the tipster has fucked up and tries to tip too many people or people don't have a wallet or whatever
+
+                foreach (var m in msg.MentionedUsers)
+                {
+                    if (cfg.UserWalletCache.ContainsKey(m.Id))
+                    {
+                        new Transfer(new TransferRequestData
+                        {
+                            AccountIndex = accountIndex,
+                            Destinations = new List<TransferDestination> {
+                                new TransferDestination {
+                                    Amount = amount.ToAtomicUnits(),
+                                    Address = cfg.UserWalletCache[m.Id].Item2
+                                }}
+                        },
+                        (TransferResponseData r) =>
+                        {
+                            Sender.PrivateReply(msg, $"You sent {r.Amount.FromAtomicUnits()} xnv to {m.Mention} with a fee of {r.Fee.FromAtomicUnits()} xnv\r\n{r.TxHash}").Wait();
+                            
+                            if (m.Id != cfg.BotID) //exception thrown if trying to send a DM to fusion, so skip
+                                Sender.SendPrivateMessage(Globals.Client.GetUser(m.Id), $"{msg.Author.Mention} sent you {r.Amount.FromAtomicUnits()} xnv").Wait();
+                        },
+                        (RequestError e) =>
+                        {
+                            Sender.PrivateReply(msg, "Oof. No good. You are going to have to try again later.").Wait();
+                        },
+                        cfg.WalletHost, cfg.UserWalletPort).Run();
+                    }
+                    else
+                    {
+                        Sender.PrivateReply(msg, $"{m.Mention} does not have a wallet. They cannot take your tip.").Wait();
+                        Sender.SendPrivateMessage(Globals.Client.GetUser(m.Id), $"{msg.Author.Mention} tried to send you {amount} xnv, but you don't have a wallet").Wait();
+                    }
+                }
+            }
+        }
+    }
+}

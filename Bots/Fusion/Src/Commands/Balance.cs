@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Nerva.Bots;
@@ -16,15 +15,13 @@ namespace Fusion.Commands
         {
             FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
 
-            if (!cfg.UserWalletIndices.ContainsKey(msg.Author.Id))
+            if (!cfg.UserWalletCache.ContainsKey(msg.Author.Id))
                 AccountHelper.CreateNewAccount(msg);
             else
             {
-                uint accountIndex = cfg.UserWalletIndices[msg.Author.Id];
-
                 new GetBalance(new GetBalanceRequestData
                 {
-                    AccountIndex = accountIndex
+                    AccountIndex = cfg.UserWalletCache[msg.Author.Id].Item1
                 },
                 (GetBalanceResponseData result) =>
                 {
@@ -34,6 +31,7 @@ namespace Fusion.Commands
                     .WithColor(Color.DarkTeal)
                     .WithThumbnailUrl(Globals.Client.CurrentUser.GetAvatarUrl());
 
+                    eb.AddField("Address", cfg.UserWalletCache[msg.Author.Id].Item2);
                     eb.AddField($"Unlocked", $"{result.UnlockedBalance.FromAtomicUnits()} xnv");
                     eb.AddField($"Total", $"{result.Balance.FromAtomicUnits()} xnv");
 

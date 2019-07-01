@@ -17,6 +17,7 @@ namespace Fusion
         public ulong ServerID => 439649936414474256;
         public ulong BotID => 466512207396732939;
         public ulong BotChannelID => 466873635638870016;
+
         public string CmdPrefix => "$";
 
 		public string WalletHost { get; } = "http://127.0.0.1";
@@ -29,7 +30,7 @@ namespace Fusion
 
         public string DonationPaymentIdKey { get; set; } = null;
 
-		public Dictionary<ulong, uint> UserWalletIndices { get; } = new Dictionary<ulong, uint>();
+		public Dictionary<ulong, Tuple<uint, string>> UserWalletCache { get; } = new Dictionary<ulong, Tuple<uint, string>>();
     }
 
     public class FusionBot : IBot
@@ -106,14 +107,20 @@ namespace Fusion
 					foreach (var a in r2.Accounts)
 					{
 						ulong uid = 0;
-						
+
 						if (ulong.TryParse(a.Label, out uid))
 						{
-							cfg.UserWalletIndices.Add(uid, a.Index);
-							Log.Write($"Loaded wallet for user: {a.Label}");
+							cfg.UserWalletCache.Add(uid, new Tuple<uint, string>(a.Index, a.BaseAddress));
+							Log.Write($"Loaded wallet for user: {a.Label} - {a.BaseAddress}");
 						}
 						else
-							Log.Write($"Account index {a.Index} is not associated with a user");
+						{
+							//fusion owns address index 0
+							if (a.Index == 0)
+								cfg.UserWalletCache.Add(cfg.BotID, new Tuple<uint, string>(a.Index, a.BaseAddress));
+							else
+								Log.Write($"Account index {a.Index} is not associated with a user");
+						}
 					}
 				},
 				(RequestError error) =>

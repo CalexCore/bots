@@ -1,14 +1,15 @@
+using System.Collections.Generic;
 using Discord.WebSocket;
 using Nerva.Bots;
-using Nerva.Bots.Helpers;
 using Nerva.Bots.Plugin;
 using Nerva.Rpc;
 using Nerva.Rpc.Wallet;
+using Nerva.Bots.Helpers;
 
 namespace Fusion.Commands
 {
-    [Command("sendall", "Empty your bag")]
-    public class SendAll : ICommand
+    [Command("send", "Send some coins to one or more addresses")]
+    public class Send : ICommand
     {
         public void Process(SocketUserMessage msg)
         {
@@ -18,34 +19,35 @@ namespace Fusion.Commands
                 AccountHelper.CreateNewAccount(msg);
             else
             {
+                uint accountIndex = cfg.UserWalletCache[msg.Author.Id].Item1;
+
                 string address;
+                double amount;
+
                 if (!AccountHelper.ParseAddressFromMessage(msg, out address))
                 {
                     Sender.PrivateReply(msg, "Oof. No good. You didn't provide a valid address. :derp:").Wait();
                     return;
                 }
 
-                uint accountIndex = cfg.UserWalletCache[msg.Author.Id].Item1;
+                if (!AccountHelper.ParseAmountFromMessage(msg, out amount))
+                {
+                    Sender.PrivateReply(msg, "Oof. No good. You need to know how much you want to send. :derp:").Wait();
+                    return;
+                }
 
-                new SweepAll(new SweepAllRequestData
+                new Transfer(new TransferRequestData
                 {
                     AccountIndex = accountIndex,
-                    Address = address,
+                    Destinations = new List<TransferDestination> {
+                        new TransferDestination {
+                            Amount = amount.ToAtomicUnits(),
+                            Address = address
+                        }}
                 },
-                (SweepAllResponseData r) =>
+                (TransferResponseData r) =>
                 {
-                    int numTxs = r.TxHashList.Count;
-                    double totalAmount = 0, totalFee = 0;
-                    string txHashList = string.Empty;
-
-                    for (int i = 0; i < numTxs; i++)
-                    {
-                        totalAmount += r.AmountList[i].FromAtomicUnits();
-                        totalFee += r.FeeList[i].FromAtomicUnits();
-                        txHashList += $"{r.TxHashList[i]}\r\n";
-                    }
-
-                    Sender.PrivateReply(msg, $"{totalAmount} xnv was sent with a fee of {totalFee} xnv in {numTxs} transactions\r\n{txHashList}").Wait();
+                    Sender.PrivateReply(msg, $"{r.Amount.FromAtomicUnits()} xnv was sent with a fee of {r.Fee.FromAtomicUnits()} xnv\r\n{r.TxHash}").Wait();
                 },
                 (RequestError e) =>
                 {
