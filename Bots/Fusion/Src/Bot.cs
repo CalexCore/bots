@@ -110,8 +110,13 @@ namespace Fusion
 
 						if (ulong.TryParse(a.Label, out uid))
 						{
-							cfg.UserWalletCache.Add(uid, new Tuple<uint, string>(a.Index, a.BaseAddress));
-							Log.Write($"Loaded wallet for user: {a.Label} - {a.BaseAddress}");
+							if (!cfg.UserWalletCache.ContainsKey(uid))
+							{
+								cfg.UserWalletCache.Add(uid, new Tuple<uint, string>(a.Index, a.BaseAddress));
+								Log.Write($"Loaded wallet for user: {a.Label} - {a.BaseAddress}");
+							}
+							else
+								Log.Write($"Duplicate wallet detected for user with id: {uid}");
 						}
 						else
 						{

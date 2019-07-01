@@ -36,6 +36,37 @@ namespace Fusion
             cfg.WalletHost, cfg.UserWalletPort).Run();
         }
 
+        public static bool CreateNewAccount(SocketUser user, out string address)
+        {
+            FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
+            bool ret = false;
+            string addr = string.Empty;
+            
+            if (cfg.UserWalletCache.ContainsKey(user.Id))
+            {
+                address = cfg.UserWalletCache[user.Id] == null ? string.Empty : cfg.UserWalletCache[user.Id].Item2;
+                return !string.IsNullOrEmpty(address);
+            }
+
+            cfg.UserWalletCache.Add(user.Id, null);
+
+            new CreateAccount(new CreateAccountRequestData
+            {
+                Label = user.Id.ToString()
+            },
+            (CreateAccountResponseData r) =>
+            {
+                Sender.SendPrivateMessage(user, $"You now have a new account. You can make a deposit to\r\n`{r.Address}`").Wait();
+                cfg.UserWalletCache[user.Id] = new Tuple<uint, string>(r.Index, r.Address);
+                addr = r.Address;
+                ret = true;
+            },
+            null, cfg.WalletHost, cfg.UserWalletPort).Run();
+
+            address = addr;
+            return ret;
+        }
+
         public static bool ParseAddressFromMessage(SocketUserMessage msg, out string address)
         {
             address = null;
