@@ -27,7 +27,7 @@ namespace Fusion.Commands
                     .WithColor(Color.DarkTeal)
                     .WithThumbnailUrl(Globals.Client.CurrentUser.GetAvatarUrl());
 
-                    eb.AddField("Address", cfg.UserWalletCache[cfg.BotID].Item2);
+                    eb.AddField("Address", cfg.UserWalletCache[cfg.BotId].Item2);
                     eb.AddField("Unlocked", $"{result.UnlockedBalance.FromAtomicUnits()} xnv");
                     eb.AddField("Total", $"{result.Balance.FromAtomicUnits()} xnv");
 

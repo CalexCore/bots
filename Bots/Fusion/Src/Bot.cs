@@ -13,11 +13,20 @@ namespace Fusion
 {
     public class FusionBotConfig : IBotConfig
     {
-        public ulong OwnerID => 388852986316587010;
-        public ulong ServerID => 479322729007546368;
+        public ulong OwnerId => 388852986316587010;
+
         //FORK: Set the correct bot id and remove this comment
-        public ulong BotID => 0;
-        public ulong BotChannelID => 509444814404714501;
+        public ulong BotId => 0;
+
+        public List<ulong> BotChannelIds => new List<ulong>
+		{
+			509444814404714501, //AM-Bots
+		};
+
+		public List<ulong> DevRoleIds => new List<ulong>
+		{
+			556604722476351490, //Admin
+		};
 
         public string CmdPrefix => "$";
 
@@ -123,7 +132,7 @@ namespace Fusion
 						{
 							//fusion owns address index 0
 							if (a.Index == 0)
-								cfg.UserWalletCache.Add(cfg.BotID, new Tuple<uint, string>(a.Index, a.BaseAddress));
+								cfg.UserWalletCache.Add(cfg.BotId, new Tuple<uint, string>(a.Index, a.BaseAddress));
 							else
 								Log.Write($"Account index {a.Index} is not associated with a user");
 						}

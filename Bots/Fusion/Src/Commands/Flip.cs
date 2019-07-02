@@ -36,7 +36,7 @@ namespace Fusion.Commands
                 string playerAddress = cfg.UserWalletCache[msg.Author.Id].Item2;
                 ulong playerBalance = 0;
 
-                string fusionAddress = cfg.UserWalletCache[cfg.BotID].Item2;
+                string fusionAddress = cfg.UserWalletCache[cfg.BotId].Item2;
                 ulong fusionBalance = 0;
 
                 //get balance of player wallet
@@ -50,7 +50,7 @@ namespace Fusion.Commands
 
                 //get balance of fusion wallet
                 new GetBalance(new GetBalanceRequestData {
-                    AccountIndex = cfg.UserWalletCache[cfg.BotID].Item1
+                    AccountIndex = cfg.UserWalletCache[cfg.BotId].Item1
                 }, (GetBalanceResponseData result) => {
                     fusionBalance = result.UnlockedBalance;
                 }, (RequestError e) => {
@@ -74,13 +74,13 @@ namespace Fusion.Commands
                 if (d > 0.5d) //payout
                 {
                     RequestError err;
-                    Payout(betAmount, cfg.BotID, msg.Author.Id, out err);
+                    Payout(betAmount, cfg.BotId, msg.Author.Id, out err);
                     HandlePayoutResult(msg, true, err);
                 }
                 else //take it
                 {
                     RequestError err;
-                    Payout(betAmount, msg.Author.Id, cfg.BotID, out err);
+                    Payout(betAmount, msg.Author.Id, cfg.BotId, out err);
                     HandlePayoutResult(msg, false, err);
                 }
             }

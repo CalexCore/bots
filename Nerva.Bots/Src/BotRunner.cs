@@ -38,7 +38,6 @@ namespace Nerva.Bots
 
             string token = null;
             string botAssembly = null;
-			Globals.DevMode = cmd["dev-mode"] != null;
 			
 			if (cmd["token"] != null)
 			{
@@ -74,8 +73,6 @@ namespace Nerva.Bots
 				await Log.Write(Log_Severity.Fatal, "Incorrect password");
 				Environment.Exit(0);
 			}
-
-			await Log.Write($"Dev Mode: {Globals.DevMode}");
 
 			if (cmd["bot"] == null)
 			{
@@ -179,8 +176,6 @@ namespace Nerva.Bots
 
     public static class Globals
     {
-        public static bool DevMode { get; set; } = false;
-
         public static Assembly BotAssembly { get; set; } = null;
 
 		public static IBot Bot { get; set; } = null;

@@ -12,7 +12,7 @@ nerva-wallet-rpc --testnet --daemon-address 127.0.0.1:18566 --disable-rpc-login 
 
 sleep 3
 
-dotnet ${dir}/Release/publish/Nerva.Bots.dll --bot ${dir}/Release/publish/Fusion.dll --dev-mode \
---token ${token} --key-file ${dir}/fusion-keys --debug --debug-hide 13                          \
---donation-wallet-file fusion-donation-wallet --donation-wallet-port ${port_1}                  \
+dotnet ${dir}/Release/publish/Nerva.Bots.dll --bot ${dir}/Release/publish/Fusion.dll \
+--token ${token} --key-file ${dir}/fusion-keys --debug --debug-hide 13               \
+--donation-wallet-file fusion-donation-wallet --donation-wallet-port ${port_1}       \
 --user-wallet-file fusion-user-wallet-testnet --user-wallet-port ${port_2}                                      
