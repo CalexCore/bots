@@ -4,9 +4,6 @@ namespace Nerva.Bots.Plugin
 {
     public interface IBotConfig
     {
-        //this person is the supreme overlord of the bot
-        ulong OwnerId { get; }
-
         //Id of the bot user
         ulong BotId { get; }
 

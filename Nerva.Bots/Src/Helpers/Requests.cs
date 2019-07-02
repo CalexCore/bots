@@ -37,7 +37,6 @@ namespace Nerva.Bots.Helpers
             if (text == null)
                 text = string.Empty;
 
-            bool isDev = (msg.Author.Id == Globals.Bot.Config.OwnerId);
             bool isRole = false;
 
             var userRoles = ((SocketGuildUser)msg.Author).Roles;
@@ -49,7 +48,7 @@ namespace Nerva.Bots.Helpers
                     break;
                 }
 
-            if (isDev || isRole)
+            if (isRole)
             {
                 msg.Channel.SendMessageAsync(text, false, embed);
                 return;
