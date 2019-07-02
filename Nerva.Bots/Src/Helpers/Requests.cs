@@ -37,11 +37,19 @@ namespace Nerva.Bots.Helpers
             if (text == null)
                 text = string.Empty;
 
-            bool isDev = (msg.Author.Id == Globals.Bot.Config.OwnerID);
+            bool isDev = (msg.Author.Id == Globals.Bot.Config.OwnerId);
+            bool isRole = false;
 
-            //only angrywasp is allowed to post anywhere
-            //todo: make a role that give people authority to issue bot commands from anywhere
-            if (isDev && Globals.DevMode)
+            var userRoles = ((SocketGuildUser)msg.Author).Roles;
+
+            foreach(SocketRole role in userRoles)
+                if (Globals.Bot.Config.DevRoleIds.Contains(role.Id))
+                {
+                    isRole = true;
+                    break;
+                }
+
+            if (isDev || isRole)
             {
                 msg.Channel.SendMessageAsync(text, false, embed);
                 return;
@@ -50,7 +58,7 @@ namespace Nerva.Bots.Helpers
             //we only show the message if the channel is the bot channel
             //privateOnly allows a per message override to force the reply to a DM
             //otherwise we send the user a dm and delete the message
-            if (msg.Channel.Id == Globals.Bot.Config.BotChannelID && !privateOnly)
+            if (Globals.Bot.Config.BotChannelIds.Contains(msg.Channel.Id) && !privateOnly)
                 msg.Channel.SendMessageAsync(text, false, embed);
             else
             {

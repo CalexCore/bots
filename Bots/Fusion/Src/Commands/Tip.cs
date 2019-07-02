@@ -66,7 +66,7 @@ namespace Fusion.Commands
                 Sender.SendPrivateMessage(Globals.Client.GetUser(msg.Author.Id), $"You sent {r.Amount.FromAtomicUnits()} xnv to {recipient.Mention} with a fee of {r.Fee.FromAtomicUnits()} xnv\r\n{r.TxHash}").Wait();
                 msg.AddReactionAsync(new Emoji("💸"));
 
-                if (recipient.Id != cfg.BotID) //exception thrown if trying to send a DM to fusion, so skip
+                if (recipient.Id != cfg.BotId) //exception thrown if trying to send a DM to fusion, so skip
                     Sender.SendPrivateMessage(Globals.Client.GetUser(recipient.Id), $"{msg.Author.Mention} sent you {r.Amount.FromAtomicUnits()} xnv").Wait();
             },
             (RequestError e) =>

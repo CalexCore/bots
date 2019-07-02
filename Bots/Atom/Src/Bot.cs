@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AngryWasp.Helpers;
 using Nerva.Bots.Plugin;
@@ -6,10 +7,24 @@ namespace Atom
 {
     public class AtomBotConfig : IBotConfig
     {
-        public ulong OwnerID => 407511685134549003;
-        public ulong ServerID => 439649936414474256;
-        public ulong BotID => 450609948246671360;
-        public ulong BotChannelID => 450660331405049876;
+        public ulong OwnerId => 407511685134549003;
+
+        public ulong BotId => 450609948246671360;
+
+        public List<ulong> BotChannelIds => new List<ulong>
+		{
+			450660331405049876, //Atom
+			595232529456562198, //General
+			595231506209701908, //S-T
+		};
+
+        public List<ulong> DevRoleIds => new List<ulong>
+		{
+			487081227459887146,
+			450818384901308442,
+			450818386759254028
+		};
+        
         public string CmdPrefix => "!";
 
         public static readonly string[] SeedNodes = new string[]
