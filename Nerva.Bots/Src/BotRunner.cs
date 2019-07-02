@@ -66,7 +66,7 @@ namespace Nerva.Bots
             if (cmd["password"] != null)
                 pw = cmd["password"].Value;
             else
-                pw = PasswordPrompt.Get();
+                pw = PasswordPrompt.Get("Please enter your token decryption password");
 
 			try {
 				decryptedToken = token.Decrypt(pw);
@@ -152,21 +152,28 @@ namespace Nerva.Bots
 
 		private async Task MessageReceived(SocketMessage message)
 		{
-			var msg = message as SocketUserMessage;
-            if (msg == null)
-                return;
+			try	
+			{
+				var msg = message as SocketUserMessage;
+				if (msg == null)
+					return;
 
-            Regex pattern = new Regex($@"\{Globals.Bot.Config.CmdPrefix}\w+");
-            var commands = pattern.Matches(msg.Content.ToLower()).Cast<Match>().Select(match => match.Value).ToArray();
+				Regex pattern = new Regex($@"\{Globals.Bot.Config.CmdPrefix}\w+");
+				var commands = pattern.Matches(msg.Content.ToLower()).Cast<Match>().Select(match => match.Value).ToArray();
 
-            if (commands.Length == 0)
-                return;
+				if (commands.Length == 0)
+					return;
 
-			foreach (var c in commands)
-            {
-                if (Globals.Commands.ContainsKey(c))
-                    await Task.Run(() => Globals.Commands[c].Invoke(msg));
-            }
+				foreach (var c in commands)
+				{
+					if (Globals.Commands.ContainsKey(c))
+						await Task.Run(() => Globals.Commands[c].Invoke(msg));
+				}
+			}
+			catch (Exception ex)
+			{
+				await Log.WriteNonFatalException(ex);
+			}
 		}
     }
 

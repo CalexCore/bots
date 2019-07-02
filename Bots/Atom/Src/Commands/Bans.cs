@@ -1,8 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
-using Atom;
 using Discord.WebSocket;
 using Nerva.Bots.Helpers;
 using Nerva.Bots.Plugin;
@@ -22,12 +19,13 @@ namespace Atom.Commands
             HashSet<string> banList = new HashSet<string>();
 
             foreach (var sn in AtomBotConfig.SeedNodes)
-                if (Request.Http($"{sn}api/getbans.php", out result))
+                if (Request.Http($"{sn}/api/getbans.php", out result))
                 {
-                    string[] split = result.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
-                    foreach (string s in split)
-                        if (!banList.Contains(s))
-                            banList.Add(s);
+                    List<BanListItem> bl = JsonConvert.DeserializeObject<JsonResult<BanList>>(result).Result.Bans;
+
+                    foreach (var b in bl)
+                        if (!banList.Contains(b.Host))
+                            banList.Add(b.Host);
                 }
 
             //Discord has a 2000 character message limit. It may be possible to exceed this if the ban list is large

@@ -1,5 +1,3 @@
-using System;
-using Atom;
 using Discord.WebSocket;
 using Nerva.Bots.Helpers;
 using Nerva.Bots.Plugin;

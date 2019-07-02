@@ -1,13 +1,18 @@
 #!/bin/bash
 dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 token=exV1CI00M4bKWKdXfeeBGsI1Oa3F9MOhN4u6Zt8IwdX5LJMkQ88+w/srABu9nu+t7o8gVShXIEVD9iIcZdBDnat7qJ0C7ZOsdYu6k7PpDtIaaCT+rbPvEirThHuZl0KZ
-i_key=rbWGdgmJ457xXyMnfcRy08vi2FF2Utkc45TudgTIMAwYXqrirDkwG/rE6K41ply1BBIURAMjiPeeEEqbpfDJKeSeV9sP5FJHglGfUEA68oBesJ2A3LS7knItbkVRoW41
-w_key=t/VDsD24TPkx+rNYgDj1VISVPS3GMdlt1ao6wbFjZL46FLRhTeYL7BZ8Qixad/MR5CGOS3tVlsl9dSFMDzacHCMVLuthgvjHm3YEQ3uZb8OWoEkQ/tx7JYSTQ4wy/gK9
-port=12656
+port_1=12656
+port_2=12657
 
 killall nerva-wallet-rpc
-nerva-wallet-rpc --daemon-address 127.0.0.1:17566 --disable-rpc-login --rpc-bind-port ${port} --wallet-dir ${dir}/Wallets &
+sleep 5
+reset
+nerva-wallet-rpc --daemon-address 127.0.0.1:17566 --disable-rpc-login --rpc-bind-port ${port_1} --wallet-dir ${dir}/Wallets --prompt-for-password &
+nerva-wallet-rpc --testnet --daemon-address 127.0.0.1:18566 --disable-rpc-login --rpc-bind-port ${port_2} --wallet-dir ${dir}/Wallets --prompt-for-password &
 
 sleep 3
 
-dotnet ${dir}/Release/Nerva.Bots.dll --bot ${dir}/Release/Fusion.dll --dev-mode --token ${token} --port ${port} --debug 1 --debug-hide 13
+dotnet ${dir}/Release/publish/Nerva.Bots.dll --bot ${dir}/Release/publish/Fusion.dll --dev-mode \
+--token ${token} --key-file ${dir}/fusion-keys --debug --debug-hide 13                          \
+--donation-wallet-file fusion-donation-wallet --donation-wallet-port ${port_1}                  \
+--user-wallet-file fusion-user-wallet-testnet --user-wallet-port ${port_2}                                      

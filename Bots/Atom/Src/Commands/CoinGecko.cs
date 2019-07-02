@@ -1,4 +1,3 @@
-using Atom;
 using Discord;
 using Discord.WebSocket;
 using Nerva.Bots;

@@ -15,15 +15,19 @@
             ]
         },
         {
-            "name": "Magellan",
+            "name": "Fusion",
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceRoot}/Bin/Debug/Nerva.Bots.dll",
             "cwd": "${workspaceRoot}/Bin",
             "console": "externalTerminal",
+            "preLaunchTask": "build-debug",
             "args":[
-                "--dev-mode", "--bot", "${workspaceRoot}/Bin/Debug/Magellan.dll",
+                "--dev-mode", "--bot", "${workspaceRoot}/Bin/Debug/Fusion.dll",
                 "--token", "FXXCAEFbv+Hz65LXBk30SoKbR5ZQcQyRHtWgmcBg7/TuQbrVbKoRfLuRk1XIYafYCpSZTgZvvtXqjqlU/SAo34Jq/vVz/085q8n1z7YhgD/l0iKZwNp0q67X+S8ymOWv",
+                "--key-file", "${workspaceRoot}/Bin/fusion-keys",
+                "--donation-wallet-file", "fusion-donation-wallet", "--donation-wallet-port", "12656",
+                "--user-wallet-file", "fusion-user-wallet-testnet", "--user-wallet-port", "12657"
             ]
         },
         {

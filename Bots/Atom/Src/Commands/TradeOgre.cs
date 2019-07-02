@@ -8,8 +8,6 @@ using Newtonsoft.Json;
 
 namespace Atom.Commands
 {
-    //TODO: Leaving this here in case amity gets listed on TradeOgre
-    //Uncomment the Command attribute to add it to the list of commands
     //[Command("tradeogre", "Get market info from TradeOgre")]
     public class TradeOgre : ICommand
     {

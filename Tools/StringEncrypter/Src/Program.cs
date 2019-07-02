@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using AngryWasp.Helpers;
 using AngryWasp.Logger;
-using Nerva.Bots.Helpers;
 using Log = AngryWasp.Logger.Log;
 
 namespace Tools
