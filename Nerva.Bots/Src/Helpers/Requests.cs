@@ -1,3 +1,4 @@
+using System;
 using AngryWasp.Helpers;
 using AngryWasp.Logger;
 using Discord;
@@ -34,37 +35,46 @@ namespace Nerva.Bots.Helpers
     {
         public static void Reply(SocketUserMessage msg, bool privateOnly = false, string text = null, Embed embed = null)
         {
-            if (text == null)
-                text = string.Empty;
-
-            bool isRole = false;
-
-            var userRoles = ((SocketGuildUser)msg.Author).Roles;
-
-            foreach(SocketRole role in userRoles)
-                if (Globals.Bot.Config.DevRoleIds.Contains(role.Id))
-                {
-                    isRole = true;
-                    break;
-                }
-
-            if (isRole)
+            try
             {
-                msg.Channel.SendMessageAsync(text, false, embed);
-                return;
-            }
+                if (text == null)
+                    text = string.Empty;
 
-            //we only show the message if the channel is the bot channel
-            //privateOnly allows a per message override to force the reply to a DM
-            //otherwise we send the user a dm and delete the message
-            if (Globals.Bot.Config.BotChannelIds.Contains(msg.Channel.Id) && !privateOnly)
-                msg.Channel.SendMessageAsync(text, false, embed);
-            else
-            {
-                Discord.UserExtensions.SendMessageAsync(msg.Author, text, false, embed);
                 if (msg.Channel.GetType() != typeof(SocketDMChannel))
-                    msg.DeleteAsync();
+                {
+                    bool isRole = false;
+                    var userRoles = ((SocketGuildUser)msg.Author).Roles;
+                    foreach(SocketRole role in userRoles)
+                        if (Globals.Bot.Config.DevRoleIds.Contains(role.Id))
+                        {
+                            isRole = true;
+                            break;
+                        }
+                    
+                    if (isRole)
+                    {
+                        msg.Channel.SendMessageAsync(text, false, embed);
+                        return;
+                    }
+
+                    if (Globals.Bot.Config.BotChannelIds.Contains(msg.Channel.Id) && !privateOnly)
+                        msg.Channel.SendMessageAsync(text, false, embed);
+                    else
+                    {
+                        Discord.UserExtensions.SendMessageAsync(msg.Author, text, false, embed);
+                        msg.DeleteAsync();
+                    }
+                }
+                else
+                {
+                    Discord.UserExtensions.SendMessageAsync(msg.Author, text, false, embed);
+                }
             }
+            catch (Exception)
+            {
+                Log.Write($"Count not send reply to {msg.Author.Username}");
+            }
+            
         }
     }
 }
