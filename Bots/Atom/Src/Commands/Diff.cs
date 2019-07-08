@@ -11,7 +11,7 @@ namespace Atom.Commands
         public void Process(SocketUserMessage msg)
         {
             string result;
-            if (Request.Api(AtomBotConfig.SeedNodes, "getinfo", msg.Channel, out result))
+            if (Request.Api(AtomBotConfig.SeedNodes, "daemon/get_info", msg.Channel, out result))
             {
                 int diff = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(result).Result.Difficulty;
                 DiscordResponse.Reply(msg, text: $"Current difficulty: {diff}");

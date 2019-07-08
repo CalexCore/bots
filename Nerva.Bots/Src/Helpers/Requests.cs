@@ -13,7 +13,7 @@ namespace Nerva.Bots.Helpers
             resultString = null;
 
             for (int i = 0; i < apiLinks.Length; i++)
-                if (Http($"{apiLinks[i]}/api/{method}.php", out resultString))
+                if (Http($"{apiLinks[i]}/api/{method}/", out resultString))
                     return true;
 
             channel.SendMessageAsync("Sorry... All API's are down. The zombie apocalyse is upon us! :scream:");

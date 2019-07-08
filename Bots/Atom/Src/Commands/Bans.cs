@@ -19,7 +19,7 @@ namespace Atom.Commands
             HashSet<string> banList = new HashSet<string>();
 
             foreach (var sn in AtomBotConfig.SeedNodes)
-                if (Request.Http($"{sn}/api/getbans.php", out result))
+                if (Request.Http($"{sn}/api/daemon/get_bans/", out result))
                 {
                     List<BanListItem> bl = JsonConvert.DeserializeObject<JsonResult<BanList>>(result).Result.Bans;
 

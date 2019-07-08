@@ -11,7 +11,7 @@ namespace Atom.Commands
         public void Process(SocketUserMessage msg)
         {
             string result;
-            if (Request.Api(AtomBotConfig.SeedNodes, "getgeneratedcoins", msg.Channel, out result))
+            if (Request.Api(AtomBotConfig.SeedNodes, "daemon/get_generated_coins", msg.Channel, out result))
             {
                 ulong coins = JsonConvert.DeserializeObject<JsonResult<GetGeneratedCoins>>(result).Result.Coins;
                 DiscordResponse.Reply(msg, text: $"Current Supply: {coins.FromAtomicUnits()}");

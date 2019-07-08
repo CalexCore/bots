@@ -26,7 +26,7 @@ namespace Atom.Commands
 
                 foreach (var s in AtomBotConfig.SeedNodes)
                 {
-                    if (Request.Http($"{s}/api/setbans.php?ip={ip}&ban=false&time=0", out result))
+                    if (Request.Http($"{s}/api/daemon/set_bans/?ip={ip}&ban=false&time=0", out result))
                         allFail = false;
                     else
                         partialFail = true;

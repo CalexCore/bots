@@ -27,7 +27,7 @@ namespace Atom.Commands
                 {
                     NodeInfo ni = null;
                     string result;
-                    if (Request.Http($"{s}/api/getinfo.php", out result))
+                    if (Request.Http($"{s}/api/daemon/get_info/", out result))
                         ni = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(result).Result;
 
                     string si = GetSeedInfoString(ni);
