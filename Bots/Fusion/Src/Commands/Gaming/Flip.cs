@@ -8,7 +8,7 @@ using Nerva.Rpc;
 using Nerva.Rpc.Wallet;
 using static AngryWasp.Helpers.MathHelper;
 
-namespace Fusion.Commands
+namespace Fusion.Commands.Gaming
 {
     [Command("flip", "Toss a coin. Double or nothing")]
     public class Flip : ICommand
@@ -22,7 +22,7 @@ namespace Fusion.Commands
             else
             {
                 double betAmount;
-                if (!AccountHelper.ParseAmountFromMessage(msg, out betAmount))
+                if (!AccountHelper.ParseDoubleFromMessage(msg, out betAmount))
                 {
                     Sender.PublicReply(msg, "Oof. No good. You didn't say how much you want to bet.").Wait();
                     return;

@@ -21,7 +21,7 @@ namespace Fusion.Commands
             else
             {
                 double amount;
-                if (!AccountHelper.ParseAmountFromMessage(msg, out amount))
+                if (!AccountHelper.ParseDoubleFromMessage(msg, out amount))
                 {
                     Sender.PrivateReply(msg, "Oof. No good. You didn't say how much you want to tip.").Wait();
                     return;

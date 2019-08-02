@@ -30,7 +30,7 @@ namespace Fusion.Commands
                     return;
                 }
 
-                if (!AccountHelper.ParseAmountFromMessage(msg, out amount))
+                if (!AccountHelper.ParseDoubleFromMessage(msg, out amount))
                 {
                     Sender.PrivateReply(msg, "Oof. No good. You need to know how much you want to send. :derp:").Wait();
                     return;

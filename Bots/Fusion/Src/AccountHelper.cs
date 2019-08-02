@@ -81,7 +81,7 @@ namespace Fusion
             return true;
         }
 
-        public static bool ParseAmountFromMessage(SocketUserMessage msg, out double amount)
+        public static bool ParseDoubleFromMessage(SocketUserMessage msg, out double amount)
         {
             Regex amtPattern = new Regex(@"\s(\d+(\.?\d+)*)");
             var m = amtPattern.Match(msg.Content);
@@ -92,6 +92,20 @@ namespace Fusion
                 amount = double.NaN;
 
             return !double.IsNaN(amount);
+        }
+
+        public static bool ParseIntFromMessage(SocketUserMessage msg, out int amount)
+        {
+            
+            Regex amtPattern = new Regex(@"\s(\d+(\.?\d+)*)");
+            var m = amtPattern.Match(msg.Content);
+
+            if (m.Success)
+                int.TryParse(m.Value, out amount);
+            else
+                amount = int.MinValue;
+
+            return amount != int.MaxValue;;
         }
     }
 }
