@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Discord.WebSocket;
 
 namespace Nerva.Bots.Plugin
@@ -20,6 +21,6 @@ namespace Nerva.Bots.Plugin
 
     public interface ICommand
     {
-        void Process(SocketUserMessage userMsg);
+        Task Process(SocketUserMessage userMsg);
     }
 }

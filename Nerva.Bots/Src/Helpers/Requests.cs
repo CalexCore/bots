@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using AngryWasp.Helpers;
 using AngryWasp.Logger;
 using Discord;
@@ -6,34 +7,49 @@ using Discord.WebSocket;
 
 namespace Nerva.Bots.Helpers
 {
+    public class RequestData
+    {
+        public string ResultString { get; set; }
+
+        public string ErrorString { get; set; }
+        public bool IsError => !string.IsNullOrEmpty(ErrorString);
+    }
+
     public class Request
     {
-        public static bool Api(string[] apiLinks, string method, ISocketMessageChannel channel, out string resultString)
+        public static async Task<RequestData> Api(string[] apiLinks, string method, ISocketMessageChannel channel)
         {
-            resultString = null;
-
             for (int i = 0; i < apiLinks.Length; i++)
-                if (Http($"{apiLinks[i]}/api/{method}/", out resultString))
-                    return true;
+            {
+                RequestData rd = await Http($"{apiLinks[i]}/api/{method}/");
 
-            channel.SendMessageAsync("Sorry... All API's are down. The zombie apocalyse is upon us! :scream:");
-            return false;
+                if (!rd.IsError)
+                    return rd;
+            }
+
+            await channel.SendMessageAsync("Sorry... All API's are down. The zombie apocalyse is upon us! :scream:");
+            return null;
         }
 
-        public static bool Http(string url, out string returnString)
-        {
-            string error = null;
-            if (NetHelper.HttpRequest(url, out returnString, out error))
-                return true;
 
-            Log.Write(Log_Severity.Error, error);
-            return false;
+        public static async Task<RequestData> Http(string url)
+        {
+            string rs = null, e = null;
+
+            if (!NetHelper.HttpRequest(url, out rs, out e))
+                await Log.Write(Log_Severity.Error, e);
+
+            return new RequestData
+            {
+                ErrorString = e,
+                ResultString = rs
+            };
         }
     }
 
     public class DiscordResponse
     {
-        public static void Reply(SocketUserMessage msg, bool privateOnly = false, string text = null, Embed embed = null)
+        public static async Task Reply(SocketUserMessage msg, bool privateOnly = false, string text = null, Embed embed = null)
         {
             try
             {
@@ -53,28 +69,27 @@ namespace Nerva.Bots.Helpers
                     
                     if (isRole)
                     {
-                        msg.Channel.SendMessageAsync(text, false, embed);
+                        await msg.Channel.SendMessageAsync(text, false, embed);
                         return;
                     }
 
                     if (Globals.Bot.Config.BotChannelIds.Contains(msg.Channel.Id) && !privateOnly)
-                        msg.Channel.SendMessageAsync(text, false, embed);
+                        await msg.Channel.SendMessageAsync(text, false, embed);
                     else
                     {
-                        Discord.UserExtensions.SendMessageAsync(msg.Author, text, false, embed);
-                        msg.DeleteAsync();
+                        await Discord.UserExtensions.SendMessageAsync(msg.Author, text, false, embed);
+                        await msg.DeleteAsync();
                     }
                 }
                 else
                 {
-                    Discord.UserExtensions.SendMessageAsync(msg.Author, text, false, embed);
+                    await Discord.UserExtensions.SendMessageAsync(msg.Author, text, false, embed);
                 }
             }
             catch (Exception)
             {
-                Log.Write($"Count not send reply to {msg.Author.Username}");
+                await Log.Write($"Count not send reply to {msg.Author.Username}");
             }
-            
         }
     }
 }

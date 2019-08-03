@@ -6,25 +6,25 @@ using Nerva.Bots.Helpers;
 using Nerva.Bots.Plugin;
 using Nerva.Rpc;
 using Nerva.Rpc.Wallet;
-using static AngryWasp.Helpers.MathHelper;
+using System.Threading.Tasks;
 
 namespace Fusion.Commands.Gaming
 {
     [Command("flip", "Toss a coin. Double or nothing")]
     public class Flip : ICommand
     {
-        public void Process(SocketUserMessage msg)
+        public async Task Process(SocketUserMessage msg)
         {
             FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
 
             if (!cfg.UserWalletCache.ContainsKey(msg.Author.Id))
-                AccountHelper.CreateNewAccount(msg);
+                await AccountHelper.CreateNewAccount(msg);
             else
             {
                 double betAmount;
                 if (!AccountHelper.ParseDoubleFromMessage(msg, out betAmount))
                 {
-                    Sender.PublicReply(msg, "Oof. No good. You didn't say how much you want to bet.").Wait();
+                    await Sender.PublicReply(msg, "Oof. No good. You didn't say how much you want to bet.");
                     return;
                 }
 
@@ -40,60 +40,58 @@ namespace Fusion.Commands.Gaming
                 ulong fusionBalance = 0;
 
                 //get balance of player wallet
-                new GetBalance(new GetBalanceRequestData {
+                await new GetBalance(new GetBalanceRequestData {
                     AccountIndex = cfg.UserWalletCache[msg.Author.Id].Item1
                 }, (GetBalanceResponseData result) => {
                     playerBalance = result.UnlockedBalance;
                 }, (RequestError e) => {
                     Sender.PrivateReply(msg, "Oof. No good. You are going to have to try again later.").Wait();
-                }, cfg.WalletHost, cfg.UserWalletPort).Run();
+                }, cfg.WalletHost, cfg.UserWalletPort).RunAsync();
 
                 //get balance of fusion wallet
-                new GetBalance(new GetBalanceRequestData {
+                await new GetBalance(new GetBalanceRequestData {
                     AccountIndex = cfg.UserWalletCache[cfg.BotId].Item1
                 }, (GetBalanceResponseData result) => {
                     fusionBalance = result.UnlockedBalance;
                 }, (RequestError e) => {
                     Sender.PrivateReply(msg, "Oof. No good. You are going to have to try again later.").Wait();
-                }, cfg.WalletHost, cfg.UserWalletPort).Run();
+                }, cfg.WalletHost, cfg.UserWalletPort).RunAsync();
 
                 if (playerBalance < totalAmount)
                 {
-                    Sender.PublicReply(msg, "You ain't got enough cash. Maybe you need gamblers anonymous? :thinking:").Wait();
+                    await Sender.PublicReply(msg, "You ain't got enough cash. Maybe you need gamblers anonymous? :thinking:");
                     return;
                 }
 
                 if (fusionBalance < totalAmount)
                 {
-                    Sender.PublicReply(msg, "Hold on high roller! I can't cover that :whale:").Wait();
+                    await Sender.PublicReply(msg, "Hold on high roller! I can't cover that :whale:");
                     return;
                 }
 
-                double d = new MersenneTwister(Random.GenerateRandomSeed()).NextDouble();
+                double d = MathHelper.Random.NextDouble();
 
                 if (d > 0.5d) //payout
                 {
-                    RequestError err;
-                    Payout(betAmount, cfg.BotId, msg.Author.Id, out err);
-                    HandlePayoutResult(msg, true, err);
+                    RequestError err = await Payout(betAmount, cfg.BotId, msg.Author.Id);
+                    await HandlePayoutResult(msg, true, err);
                 }
                 else //take it
                 {
-                    RequestError err;
-                    Payout(betAmount, msg.Author.Id, cfg.BotId, out err);
-                    HandlePayoutResult(msg, false, err);
+                    RequestError err = await Payout(betAmount, msg.Author.Id, cfg.BotId);
+                    await HandlePayoutResult(msg, false, err);
                 }
             }
         }
 
-        public static bool Payout(double amount, ulong sender, ulong recipient, out RequestError err)
+
+        public async Task<RequestError> Payout(double amount, ulong sender, ulong recipient)
         {
             FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
 
             RequestError error = null;
-            bool ret = true;
 
-            new Transfer(new TransferRequestData
+            await new Transfer(new TransferRequestData
             {
                 AccountIndex = cfg.UserWalletCache[sender].Item1,
                 Destinations = new List<TransferDestination> {
@@ -104,24 +102,22 @@ namespace Fusion.Commands.Gaming
             }, null, (RequestError e) =>
             {
                 error = e;
-                ret = false;
             },
-            cfg.WalletHost, cfg.UserWalletPort).Run();
+            cfg.WalletHost, cfg.UserWalletPort).RunAsync();
             
-            err = error;
-            return ret;
+            return error;
         }
 
-        public static void HandlePayoutResult(SocketUserMessage msg, bool win, RequestError err)
+        private async Task HandlePayoutResult(SocketUserMessage msg, bool win, RequestError err)
         {
             if (err != null)
-                Sender.PrivateReply(msg, $"{msg.Author.Mention} Oops. RPC Error: {err.Code}: {err.Message}", null).Wait(); 
+                await Sender.PrivateReply(msg, $"{msg.Author.Mention} Oops. RPC Error: {err.Code}: {err.Message}", null); 
             else
             {
                 if (win)
-                    Sender.PublicReply(msg, $"{msg.Author.Mention} Winner winner, chicken dinner! :chicken:").Wait();
+                    await Sender.PublicReply(msg, $"{msg.Author.Mention} Winner winner, chicken dinner! :chicken:");
                 else
-                    Sender.PublicReply(msg, $"{msg.Author.Mention} You lose, sucker! :joy:").Wait();
+                    await Sender.PublicReply(msg, $"{msg.Author.Mention} You lose, sucker! :joy:");
             }
         }
     }

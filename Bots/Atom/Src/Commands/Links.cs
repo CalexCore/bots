@@ -1,4 +1,5 @@
 using System.Text;
+using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Nerva.Bots;
@@ -11,12 +12,12 @@ namespace Atom.Commands
     [Command("links", "Get official Nerva download links")]
     public class Links : ICommand
     {
-        public void Process(SocketUserMessage msg)
+        public async Task Process(SocketUserMessage msg)
         {
-            string result;
-            if (Request.Http("https://getnerva.org/getbinaries.php", out result))
+            RequestData rd = await Request.Http("https://getnerva.org/getbinaries.php");
+            if (!rd.IsError)
             {
-                var json = JsonConvert.DeserializeObject<LinkData>(result);
+                var json = JsonConvert.DeserializeObject<LinkData>(rd.ResultString);
 
                 var em = new EmbedBuilder()
                 .WithAuthor("Download Links", Globals.Client.CurrentUser.GetAvatarUrl())
@@ -37,7 +38,7 @@ namespace Atom.Commands
 
                 em.AddField($"Chain Data", sb.ToString());
 
-                DiscordResponse.Reply(msg, embed: em.Build());
+                await DiscordResponse.Reply(msg, embed: em.Build());
             }
         }
     }

@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Security.Cryptography;
+using System.Threading;
+using System.Threading.Tasks;
 using AngryWasp.Helpers;
 using AngryWasp.Logger;
 using Log = AngryWasp.Logger.Log;
@@ -14,6 +16,11 @@ namespace Tools
         {
             CommandLineParser cmd = CommandLineParser.Parse(args);
             Log.CreateInstance(true);
+
+            for (int i = 0; i < 10; i++)
+            {
+                AsyncTest(i);
+            }
 
             if (cmd["random"] != null)
             {
@@ -82,5 +89,22 @@ namespace Tools
 
             return output;
         }
+
+        private static readonly SemaphoreSlim sl = new SemaphoreSlim(1);
+
+        //public class TT
+        //{
+            public static void AsyncTest(int x)
+            {
+                sl.Wait();
+                Console.WriteLine(x);
+
+                for (int i = 0; i < 10; i++)
+                    Console.WriteLine($"{x}: {i}");
+
+                sl.Release();
+            }
+        //}
+        
     }
 }

@@ -5,21 +5,22 @@ using Nerva.Bots.Plugin;
 using Nerva.Rpc;
 using Nerva.Rpc.Wallet;
 using Nerva.Bots.Helpers;
+using System.Threading.Tasks;
 
 namespace Fusion.Commands
 {
     [Command("balance", "Get information on your balance")]
     public class Balance : ICommand
     {
-        public void Process(SocketUserMessage msg)
+        public async Task Process(SocketUserMessage msg)
         {
             FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
 
             if (!cfg.UserWalletCache.ContainsKey(msg.Author.Id))
-                AccountHelper.CreateNewAccount(msg);
+                await AccountHelper.CreateNewAccount(msg);
             else
             {
-                new GetBalance(new GetBalanceRequestData
+                await new GetBalance(new GetBalanceRequestData
                 {
                     AccountIndex = cfg.UserWalletCache[msg.Author.Id].Item1
                 },
@@ -41,7 +42,7 @@ namespace Fusion.Commands
                 {
                     Sender.PrivateReply(msg, "Oof. No good. You are going to have to try again later.").Wait();
                 },
-                cfg.WalletHost, cfg.UserWalletPort).Run();
+                cfg.WalletHost, cfg.UserWalletPort).RunAsync();
             }
         }
     }

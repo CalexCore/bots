@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Discord.WebSocket;
 using Nerva.Bots.Helpers;
 using Nerva.Bots.Plugin;
@@ -9,12 +10,12 @@ namespace Atom.Commands
     [Command("nethash", "Get the current network hashrate")]
     public class Nethash : ICommand
     {
-        public void Process(SocketUserMessage msg)
+        public async Task Process(SocketUserMessage msg)
         {
-            string result;
-            if (Request.Api(AtomBotConfig.SeedNodes, "daemon/get_info", msg.Channel, out result))
+            RequestData rd = await Request.Api(AtomBotConfig.SeedNodes, "daemon/get_info", msg.Channel);
+            if (!rd.IsError)
             {
-                float hr = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(result).Result.Difficulty / 60.0f;
+                float hr = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(rd.ResultString).Result.Difficulty / 60.0f;
                 string formatted = $"{hr} h/s";
 
                 float kh = (float)Math.Round(hr / 1000.0f, 2);
@@ -24,7 +25,7 @@ namespace Atom.Commands
                 else
                     formatted = $"{kh} kh/s";
 
-                DiscordResponse.Reply(msg, text: $"Current nethash: {formatted}");
+                await DiscordResponse.Reply(msg, text: $"Current nethash: {formatted}");
             }
         }
     }

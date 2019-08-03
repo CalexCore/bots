@@ -6,21 +6,23 @@ using Nerva.Rpc;
 using Nerva.Rpc.Wallet;
 using System.Linq;
 using System;
+using System.Threading.Tasks;
 
 namespace Fusion
 {
     public static class AccountHelper
     {
-        public static void CreateNewAccount(SocketUserMessage msg)
+        public static async Task<bool> CreateNewAccount(SocketUserMessage msg)
         {
             FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
             ulong id = msg.Author.Id;
+            bool ret = false;
             
             //todo: should probably attempt to fetch a wallet with a tag matching the user id before making one
-            Sender.PrivateReply(msg, "You don't have an account. Hold while I create one for you.").Wait();
+            await Sender.PrivateReply(msg, "You don't have an account. Hold while I create one for you.");
 
             //create an account
-            new CreateAccount(new CreateAccountRequestData
+            await new CreateAccount(new CreateAccountRequestData
             {
                 Label = id.ToString()
             },
@@ -28,29 +30,28 @@ namespace Fusion
             {
                 Sender.PrivateReply(msg, $"You now have a new account. You can make a deposit to\r\n`{r.Address}`").Wait();
                 cfg.UserWalletCache.Add(id, new Tuple<uint, string>(r.Index, r.Address));
+                ret = true;
             },
             (RequestError e) =>
             {
                 Sender.PrivateReply(msg, "Oof. No good. You are going to have to try again later.").Wait();
             },
-            cfg.WalletHost, cfg.UserWalletPort).Run();
+            cfg.WalletHost, cfg.UserWalletPort).RunAsync();
+
+            return ret;
         }
 
-        public static bool CreateNewAccount(SocketUser user, out string address)
+        public static async Task<string> CreateNewAccount(SocketUser user)
         {
             FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
-            bool ret = false;
             string addr = string.Empty;
             
             if (cfg.UserWalletCache.ContainsKey(user.Id))
-            {
-                address = cfg.UserWalletCache[user.Id] == null ? string.Empty : cfg.UserWalletCache[user.Id].Item2;
-                return !string.IsNullOrEmpty(address);
-            }
+                return cfg.UserWalletCache[user.Id] == null ? string.Empty : cfg.UserWalletCache[user.Id].Item2;
 
             cfg.UserWalletCache.Add(user.Id, null);
 
-            new CreateAccount(new CreateAccountRequestData
+            await new CreateAccount(new CreateAccountRequestData
             {
                 Label = user.Id.ToString()
             },
@@ -59,12 +60,10 @@ namespace Fusion
                 Sender.SendPrivateMessage(user, $"You now have a new account. You can make a deposit to\r\n`{r.Address}`").Wait();
                 cfg.UserWalletCache[user.Id] = new Tuple<uint, string>(r.Index, r.Address);
                 addr = r.Address;
-                ret = true;
             },
-            null, cfg.WalletHost, cfg.UserWalletPort).Run();
+            null, cfg.WalletHost, cfg.UserWalletPort).RunAsync();
 
-            address = addr;
-            return ret;
+            return addr;
         }
 
         public static bool ParseAddressFromMessage(SocketUserMessage msg, out string address)

@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Nerva.Bots.Helpers;
@@ -8,7 +9,7 @@ namespace Nerva.Bots.Commands
     [Command("help", "Shows what this little bot can do")]
     public class Help : ICommand
     {
-        public void Process(SocketUserMessage msg)
+        public async Task Process(SocketUserMessage msg)
         {
             var em = new EmbedBuilder()
             .WithAuthor("Help", Globals.Client.CurrentUser.GetAvatarUrl())
@@ -19,7 +20,7 @@ namespace Nerva.Bots.Commands
 			foreach (var h in Globals.BotHelp)
 				em.AddField(h.Key, h.Value);
 
-            DiscordResponse.Reply(msg, embed: em.Build());
+            await DiscordResponse.Reply(msg, embed: em.Build());
         }
     }
 }

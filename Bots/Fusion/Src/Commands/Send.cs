@@ -5,18 +5,19 @@ using Nerva.Bots.Plugin;
 using Nerva.Rpc;
 using Nerva.Rpc.Wallet;
 using Nerva.Bots.Helpers;
+using System.Threading.Tasks;
 
 namespace Fusion.Commands
 {
     [Command("send", "Send some coins to one or more addresses")]
     public class Send : ICommand
     {
-        public void Process(SocketUserMessage msg)
+        public async Task Process(SocketUserMessage msg)
         {
             FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
 
             if (!cfg.UserWalletCache.ContainsKey(msg.Author.Id))
-                AccountHelper.CreateNewAccount(msg);
+                await AccountHelper.CreateNewAccount(msg);
             else
             {
                 uint accountIndex = cfg.UserWalletCache[msg.Author.Id].Item1;
@@ -26,17 +27,17 @@ namespace Fusion.Commands
 
                 if (!AccountHelper.ParseAddressFromMessage(msg, out address))
                 {
-                    Sender.PrivateReply(msg, "Oof. No good. You didn't provide a valid address. :derp:").Wait();
+                    await Sender.PrivateReply(msg, "Oof. No good. You didn't provide a valid address. :derp:");
                     return;
                 }
 
                 if (!AccountHelper.ParseDoubleFromMessage(msg, out amount))
                 {
-                    Sender.PrivateReply(msg, "Oof. No good. You need to know how much you want to send. :derp:").Wait();
+                    await Sender.PrivateReply(msg, "Oof. No good. You need to know how much you want to send. :derp:");
                     return;
                 }
 
-                new Transfer(new TransferRequestData
+                await new Transfer(new TransferRequestData
                 {
                     AccountIndex = accountIndex,
                     Destinations = new List<TransferDestination> {
@@ -53,7 +54,7 @@ namespace Fusion.Commands
                 {
                     Sender.PrivateReply(msg, "Oof. No good. You are going to have to try again later.").Wait();
                 },
-                cfg.WalletHost, cfg.UserWalletPort).Run();
+                cfg.WalletHost, cfg.UserWalletPort).RunAsync();
             }
         }
     }

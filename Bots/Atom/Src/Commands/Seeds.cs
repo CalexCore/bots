@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Nerva.Bots;
@@ -10,7 +11,7 @@ namespace Atom.Commands
     [Command("seeds", "Get seed node info")]
     public class Seeds : ICommand
     {
-        public void Process(SocketUserMessage msg)
+        public async Task Process(SocketUserMessage msg)
         {
             var em = new EmbedBuilder()
             .WithAuthor("Seed Node Information", Globals.Client.CurrentUser.GetAvatarUrl())
@@ -26,13 +27,11 @@ namespace Atom.Commands
                 try
                 {
                     NodeInfo ni = null;
-                    string result;
-                    if (Request.Http($"{s}/api/daemon/get_info/", out result))
-                        ni = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(result).Result;
+                    RequestData rd = await Request.Http($"{s}/api/daemon/get_info/");
+                    if (!rd.IsError)
+                        ni = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(rd.ResultString).Result;
 
-                    string si = GetSeedInfoString(ni);
-
-                    em.AddField($"Seed {x}", si, true);
+                    em.AddField($"Seed {x}", GetSeedInfoString(ni), true);
                 }
                 catch
                 {
@@ -42,7 +41,7 @@ namespace Atom.Commands
                 
             }
 
-            DiscordResponse.Reply(msg, embed: em.Build());
+            await DiscordResponse.Reply(msg, embed: em.Build());
         }
 
         private string GetSeedInfoString(NodeInfo s)

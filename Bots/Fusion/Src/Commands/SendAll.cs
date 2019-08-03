@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Discord.WebSocket;
 using Nerva.Bots;
 using Nerva.Bots.Helpers;
@@ -10,24 +11,24 @@ namespace Fusion.Commands
     [Command("sendall", "Empty your bag")]
     public class SendAll : ICommand
     {
-        public void Process(SocketUserMessage msg)
+        public async Task Process(SocketUserMessage msg)
         {
             FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
 
             if (!cfg.UserWalletCache.ContainsKey(msg.Author.Id))
-                AccountHelper.CreateNewAccount(msg);
+                await AccountHelper.CreateNewAccount(msg);
             else
             {
                 string address;
                 if (!AccountHelper.ParseAddressFromMessage(msg, out address))
                 {
-                    Sender.PrivateReply(msg, "Oof. No good. You didn't provide a valid address. :derp:").Wait();
+                    await Sender.PrivateReply(msg, "Oof. No good. You didn't provide a valid address. :derp:");
                     return;
                 }
 
                 uint accountIndex = cfg.UserWalletCache[msg.Author.Id].Item1;
 
-                new SweepAll(new SweepAllRequestData
+                await new SweepAll(new SweepAllRequestData
                 {
                     AccountIndex = accountIndex,
                     Address = address,
@@ -51,7 +52,7 @@ namespace Fusion.Commands
                 {
                     Sender.PrivateReply(msg, "Oof. No good. You are going to have to try again later.").Wait();
                 },
-                cfg.WalletHost, cfg.UserWalletPort).Run();
+                cfg.WalletHost, cfg.UserWalletPort).RunAsync();
             }
         }
     }

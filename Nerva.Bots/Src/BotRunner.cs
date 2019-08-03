@@ -133,7 +133,7 @@ namespace Nerva.Bots
 					continue;
 
 				Globals.BotHelp.Add($"{Globals.Bot.Config.CmdPrefix}{ca.Cmd}", ca.Help);
-				Globals.Commands.Add($"{Globals.Bot.Config.CmdPrefix}{ca.Cmd}", ((ICommand)Activator.CreateInstance(t)).Process);
+				Globals.Commands.Add($"{Globals.Bot.Config.CmdPrefix}{ca.Cmd}", t);
 			}
 
 			client.MessageReceived += MessageReceived;
@@ -164,7 +164,7 @@ namespace Nerva.Bots
 				foreach (var c in commands)
 				{
 					if (Globals.Commands.ContainsKey(c))
-						await Task.Run(() => Globals.Commands[c].Invoke(msg));
+						await ((ICommand)Activator.CreateInstance(Globals.Commands[c])).Process(msg);
 				}
 			}
 			catch (Exception ex)
@@ -186,6 +186,6 @@ namespace Nerva.Bots
 
 		public static Dictionary<string, string> BotHelp { get; set; } = new Dictionary<string, string>();
 
-		public static Dictionary<string, Action<SocketUserMessage>> Commands = new Dictionary<string, Action<SocketUserMessage>>();
+		public static Dictionary<string, Type> Commands = new Dictionary<string, Type>();
     }
 }

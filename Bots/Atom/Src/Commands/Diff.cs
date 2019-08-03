@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Discord.WebSocket;
 using Nerva.Bots.Helpers;
 using Nerva.Bots.Plugin;
@@ -8,13 +9,13 @@ namespace Atom.Commands
     [Command("diff", "Get the current network difficulty")]
     public class Diff : ICommand
     {
-        public void Process(SocketUserMessage msg)
+        public async Task Process(SocketUserMessage msg)
         {
-            string result;
-            if (Request.Api(AtomBotConfig.SeedNodes, "daemon/get_info", msg.Channel, out result))
+            RequestData rd = await Request.Api(AtomBotConfig.SeedNodes, "daemon/get_info", msg.Channel);
+            if (!rd.IsError)
             {
-                int diff = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(result).Result.Difficulty;
-                DiscordResponse.Reply(msg, text: $"Current difficulty: {diff}");
+                int diff = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(rd.ResultString).Result.Difficulty;
+                await DiscordResponse.Reply(msg, text: $"Current difficulty: {diff}");
             }
         }
     }

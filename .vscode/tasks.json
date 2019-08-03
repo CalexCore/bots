@@ -5,24 +5,21 @@
     "tasks": [
         {
             "label": "build-debug",
-            "command": "dotnet",
             "type": "shell",
+            "command": "msbuild",
+            "args": [
+                // Ask msbuild to generate full paths for file names.
+                "/property:GenerateFullPaths=true",
+                "/t:build",
+                "/property:Configuration=Debug",
+                "/property:TrimUnusedDependencies=true"
+            ],
             "group": "build",
             "presentation": {
+                // Reveal the output only if unrecognized errors occur.
                 "reveal": "silent"
             },
-            "args": ["build", "-c", "Debug"],
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "build-release",
-            "command": "dotnet",
-            "type": "shell",
-            "group": "build",
-            "presentation": {
-                "reveal": "silent"
-            },
-            "args": ["build", "-c", "Release"],
+            // Use the standard MS compiler pattern to detect errors, warnings and infos
             "problemMatcher": "$msCompile"
         }
     ]

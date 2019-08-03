@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Nerva.Bots;
@@ -10,12 +11,12 @@ namespace Atom.Commands
     [Command("coingecko", "Get info from CoinGecko")]
     public class CoinGecko : ICommand
     {
-        public void Process(SocketUserMessage msg)
+        public async Task Process(SocketUserMessage msg)
         {
-            string result;
-            if (Request.Http("https://api.coingecko.com/api/v3/coins/nerva?localization=false", out result))
+            RequestData rd = await Request.Http("https://api.coingecko.com/api/v3/coins/nerva?localization=false");
+            if (!rd.IsError)
             {
-                var json = JsonConvert.DeserializeObject<CoinGeckoInfo>(result);
+                var json = JsonConvert.DeserializeObject<CoinGeckoInfo>(rd.ResultString);
 
                 var em = new EmbedBuilder()
                 .WithAuthor("CoinGecko Details", Globals.Client.CurrentUser.GetAvatarUrl())
@@ -30,7 +31,7 @@ namespace Atom.Commands
                 em.AddField("Developer Score", json.DeveloperScore, true);
                 em.AddField("Public Interest Score", json.PublicInterestScore, true);
 
-                DiscordResponse.Reply(msg, embed: em.Build());
+                await DiscordResponse.Reply(msg, embed: em.Build());
             }
         }
     }

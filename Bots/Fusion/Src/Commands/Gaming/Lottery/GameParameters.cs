@@ -8,6 +8,8 @@ namespace Fusion.Commands.Gaming
         public float JackpotPrize { get; set; }
         public int WinnerCount { get; set; }
 
+        public int TimeToDraw { get; set; }
+
         public static readonly GameParameters StandardGame = new GameParameters
         {
             TicketCount = 100,
@@ -15,6 +17,7 @@ namespace Fusion.Commands.Gaming
             MinorPrize = 20.0f,
             JackpotPrize = 40.0f,
             WinnerCount = 4,
+            TimeToDraw = 5
         };
     }
 }
