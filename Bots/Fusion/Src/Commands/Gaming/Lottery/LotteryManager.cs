@@ -184,8 +184,7 @@ namespace Fusion.Commands.Gaming
             if (unAllocated.Count == 0)
             {
                 filled = true;
-                await Sender.PublicReply(msg, $"All tickets are sold and the draw will commence in {parameters.TimeToDraw} minutes");
-                await Task.Delay(1000 * 60 * parameters.TimeToDraw);
+                await Sender.PublicReply(msg, $"All tickets are sold. Drawing the lottery!");
                 await Draw();
             }
         }
