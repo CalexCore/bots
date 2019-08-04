@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AngryWasp.Helpers;
 using AngryWasp.Serializer;
@@ -15,15 +16,12 @@ namespace Fusion.Commands.Gaming
 
         public static Lottery CurrentGame => currentGame;
 
+        public static float Jackpot => jackpotTotal;
+
         public static void New()
         {
-            if (currentGame != null)
-            {
-                if (currentGame.Isjackpot)
-                    jackpotTotal += currentGame.Parameters.JackpotPrize;
-            }
-
             currentGame = Lottery.New(GameParameters.StandardGame);
+            jackpotTotal += currentGame.Parameters.JackpotPrize;
 
             currentGame.GameDrawn += (sender) =>
             {
@@ -124,6 +122,17 @@ namespace Fusion.Commands.Gaming
             //todo: save this game to file
 
             return allocatedNumbers;
+        }
+
+        public int GetRemainingTickets()
+        {
+            int x = 0;
+
+            for (int i = 0; i < numbers.Length; i++)
+                if (numbers[i] == 0)
+                    ++x;
+            
+            return x;
         }
 
         public void Draw()
