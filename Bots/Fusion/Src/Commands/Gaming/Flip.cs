@@ -73,39 +73,15 @@ namespace Fusion.Commands.Gaming
 
                 if (d > 0.5d) //payout
                 {
-                    RequestError err = await Payout(betAmount, cfg.BotId, msg.Author.Id);
+                    RequestError err = await AccountHelper.PayUser(betAmount, cfg.BotId, msg.Author.Id);
                     await HandlePayoutResult(msg, true, err);
                 }
                 else //take it
                 {
-                    RequestError err = await Payout(betAmount, msg.Author.Id, cfg.BotId);
+                    RequestError err = await AccountHelper.PayUser(betAmount, msg.Author.Id, cfg.BotId);
                     await HandlePayoutResult(msg, false, err);
                 }
             }
-        }
-
-
-        public async Task<RequestError> Payout(double amount, ulong sender, ulong recipient)
-        {
-            FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
-
-            RequestError error = null;
-
-            await new Transfer(new TransferRequestData
-            {
-                AccountIndex = cfg.UserWalletCache[sender].Item1,
-                Destinations = new List<TransferDestination> {
-                    new TransferDestination {
-                        Amount = amount.ToAtomicUnits(),
-                        Address = cfg.UserWalletCache[recipient].Item2
-                    }}
-            }, null, (RequestError e) =>
-            {
-                error = e;
-            },
-            cfg.WalletHost, cfg.UserWalletPort).RunAsync();
-            
-            return error;
         }
 
         private async Task HandlePayoutResult(SocketUserMessage msg, bool win, RequestError err)

@@ -1,10 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using AngryWasp.Helpers;
 using AngryWasp.Serializer;
 using Discord.WebSocket;
+using Nerva.Bots;
+using Nerva.Bots.Helpers;
+using Nerva.Rpc;
+using Log = Nerva.Bots.Helpers.Log;
 
 namespace Fusion.Commands.Gaming
 {
@@ -12,24 +18,67 @@ namespace Fusion.Commands.Gaming
     {
         private static Lottery currentGame;
 
-        private static float jackpotTotal = 0;
-
         public static Lottery CurrentGame => currentGame;
 
-        public static float Jackpot => jackpotTotal;
-
-        public static void New()
+        public static void Start()
         {
-            currentGame = Lottery.New(GameParameters.StandardGame);
-            jackpotTotal += currentGame.Parameters.JackpotPrize;
+            currentGame = Lottery.New(GameParameters.StandardGame, 0);
+            Log.Write($"New lottery game started. Jackpot {currentGame.JackpotAmount}");
+        }
 
-            currentGame.GameDrawn += (sender) =>
+        public static void Restart(float jackpot)
+        {
+            currentGame = Lottery.New(GameParameters.StandardGame, jackpot);
+            Log.Write($"New lottery game started. Jackpot {currentGame.JackpotAmount}");
+        }
+
+        public static void Load(string path)
+        {
+            currentGame = new ObjectSerializer().Deserialize<Lottery>(XDocument.Load(path));
+            Log.Write($"Existing lottery game loaded. Jackpot {currentGame.JackpotAmount}");
+        }
+
+        public static async Task ProcessResults(Lottery sender)
+        {
+            //todo: post results in fusion channel
+
+            ulong tsNow = DateTimeHelper.TimestampNow();
+            //save the game in case of dispute or a problem paying out
+            string savedGameName = $"{tsNow}.xml";
+            new ObjectSerializer().Serialize(sender, savedGameName);
+
+            var n = sender.Numbers;
+            var wn = sender.WinningNumbers;
+
+            FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
+
+            //pay minor prizes
+            foreach (var w in wn)
             {
-                //todo: payout first round winners
-                //todo: add current game jackpot amount to jackpot and pay out if won
-                //todo: notify winners of their success
-                //todo: post results in fusion channel
-            };
+                RequestError err = await AccountHelper.PayUser((double)sender.Parameters.MinorPrize, cfg.BotId, n[w]);
+                if (err != null)
+                    await Sender.SendPrivateMessage(Globals.Client.GetUser(n[w]), $"You just won {sender.Parameters.MinorPrize}xnv in the lottery, but there was a problem with the payout. Please contact an admin and quote number `{tsNow}`");
+                else
+                    await Sender.SendPrivateMessage(Globals.Client.GetUser(n[w]), $"You just won {sender.Parameters.MinorPrize}xnv in the lottery.");
+            }
+
+            float jackpot = sender.JackpotAmount;
+
+            foreach (var w in wn)
+            {
+                if (sender.JackpotNumber == w)
+                {
+                    RequestError err = await AccountHelper.PayUser((double)sender.JackpotAmount, cfg.BotId, n[w]);
+                    if (err != null)
+                        await Sender.SendPrivateMessage(Globals.Client.GetUser(n[w]), $"You just won the lottery jackpot of {sender.JackpotAmount}xnv, but there was a problem with the payout. Please contact an admin and quote number `{tsNow}`");
+                    else
+                        await Sender.SendPrivateMessage(Globals.Client.GetUser(n[w]), $"You just won the lottery jackpot of {sender.JackpotAmount}xnv.");
+
+                    jackpot = 0;
+                }
+            }
+
+            Restart(jackpot);
         }
     }
 
@@ -51,22 +100,30 @@ namespace Fusion.Commands.Gaming
         private int jackPotNumber;
 
         [SerializerInclude]
-        private bool isJackpot = false;
+        private float jackpotAmount;
 
+        [SerializerInclude]
+        private bool isJackpot = false;
+        
         public bool Isjackpot => isJackpot;
+
+        public float JackpotAmount => jackpotAmount;
 
         public GameParameters Parameters => parameters;
 
-        public delegate void GameEventHandler(Lottery sender);
+        public ulong[] Numbers => numbers;
 
-        public event GameEventHandler GameDrawn;
+        public int[] WinningNumbers => winningNumbers;
 
-        public static Lottery New(GameParameters gp)
+        public int JackpotNumber => jackPotNumber;
+        
+        public static Lottery New(GameParameters gp, float existingJackpot)
         {
             Lottery game = new Lottery();
             game.parameters = gp;
             game.numbers = new ulong[gp.TicketCount];
             game.winningNumbers = new int[5] { -1, -1, -1, -1, -1 };
+            game.jackpotAmount = gp.JackpotPrize + existingJackpot;
             return null;
         }
 
@@ -107,6 +164,10 @@ namespace Fusion.Commands.Gaming
                 s += $"{allocatedNumbers[allocatedNumbers.Length - 1]}";
 
                 await Sender.PublicReply(msg, $"{msg.Author.Mention} Your lucky numbers are {s}");
+
+                //if we have allocated numbers here, we need to save this game
+                //then we can persist after a restart
+                new ObjectSerializer().Serialize(this, Path.Combine(Environment.CurrentDirectory, "lottery.xml"));
             }
             else
                 await Sender.PublicReply(msg, $"{msg.Author.Mention} I was unable to allocate you any numbers in this draw.");
@@ -116,7 +177,7 @@ namespace Fusion.Commands.Gaming
                 filled = true;
                 await Sender.PublicReply(msg, $"All tickets are sold and the draw will commence in {parameters.TimeToDraw} minutes");
                 await Task.Delay(1000 * 60 * parameters.TimeToDraw);
-                Draw();
+                await Draw();
             }
 
             //todo: save this game to file
@@ -135,7 +196,7 @@ namespace Fusion.Commands.Gaming
             return x;
         }
 
-        public void Draw()
+        public async Task Draw()
         {
             { //first round draw
                 List<int> allNumbers = new List<int>();
@@ -163,7 +224,7 @@ namespace Fusion.Commands.Gaming
                 }
             }
 
-            GameDrawn?.Invoke(this);
+            await LotteryManager.ProcessResults(this);
         }
     }
 }

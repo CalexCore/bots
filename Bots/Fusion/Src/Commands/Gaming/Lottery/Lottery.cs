@@ -19,7 +19,7 @@ namespace Fusion.Commands.Gaming
 
             eb.AddField("Cost", $"{LotteryManager.CurrentGame.Parameters.TicketCost}xnv");
             eb.AddField("Prize", $"{LotteryManager.CurrentGame.Parameters.WinnerCount}x {LotteryManager.CurrentGame.Parameters.MinorPrize}xnv");
-            eb.AddField("Jackpot", $"{LotteryManager.Jackpot}xnv");
+            eb.AddField("Jackpot", $"{LotteryManager.CurrentGame.JackpotAmount}xnv");
             eb.AddField("Tickets Left", $"{LotteryManager.CurrentGame.GetRemainingTickets()} / {LotteryManager.CurrentGame.Parameters.TicketCount}");
 
             await Sender.PublicReply(msg, null, eb.Build());

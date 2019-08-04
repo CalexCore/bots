@@ -7,6 +7,7 @@ using Nerva.Rpc.Wallet;
 using System.Linq;
 using System;
 using System.Threading.Tasks;
+using Nerva.Bots.Helpers;
 
 namespace Fusion
 {
@@ -105,6 +106,29 @@ namespace Fusion
                 amount = int.MinValue;
 
             return amount != int.MaxValue;;
+        }
+
+        public static async Task<RequestError> PayUser(double amount, ulong sender, ulong recipient)
+        {
+            FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
+
+            RequestError error = null;
+
+            await new Transfer(new TransferRequestData
+            {
+                AccountIndex = cfg.UserWalletCache[sender].Item1,
+                Destinations = new List<TransferDestination> {
+                    new TransferDestination {
+                        Amount = amount.ToAtomicUnits(),
+                        Address = cfg.UserWalletCache[recipient].Item2
+                    }}
+            }, null, (RequestError e) =>
+            {
+                error = e;
+            },
+            cfg.WalletHost, cfg.UserWalletPort).RunAsync();
+            
+            return error;
         }
     }
 }

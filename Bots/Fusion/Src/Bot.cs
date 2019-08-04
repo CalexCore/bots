@@ -8,6 +8,7 @@ using Nerva.Rpc.Wallet;
 using Newtonsoft.Json;
 using Log = Nerva.Bots.Helpers.Log;
 using System.Collections.Generic;
+using Fusion.Commands.Gaming;
 
 namespace Fusion
 {
@@ -155,6 +156,15 @@ namespace Fusion
 				Environment.Exit(1);
 			},
 			cfg.WalletHost, cfg.UserWalletPort).Run();
+
+			//todo: Check if an existing game is still running after restart and load that instead
+
+			string fp = Path.Combine(Environment.CurrentDirectory, "lottery.xml");
+
+			if (File.Exists(fp))
+				LotteryManager.Load(fp);
+			else
+				LotteryManager.Start();
         }
     }
 }
