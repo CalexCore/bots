@@ -57,6 +57,8 @@ namespace Fusion
 
         public void Init(CommandLineParser cmd)
         {
+			AngryWasp.Serializer.Serializer.Initialize();
+			
             if (cmd["donation-wallet-port"] != null)
 				cfg.DonationWalletPort = uint.Parse(cmd["donation-wallet-port"].Value);
 
