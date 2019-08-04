@@ -58,7 +58,10 @@ namespace Fusion
         public void Init(CommandLineParser cmd)
         {
 			AngryWasp.Serializer.Serializer.Initialize();
-			
+
+			string fpp = Path.Combine(Environment.CurrentDirectory, "lottery.xml");
+			LotteryManager.Load(fpp);
+
             if (cmd["donation-wallet-port"] != null)
 				cfg.DonationWalletPort = uint.Parse(cmd["donation-wallet-port"].Value);
 

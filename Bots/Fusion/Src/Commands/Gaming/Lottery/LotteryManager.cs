@@ -207,7 +207,7 @@ namespace Fusion.Commands.Gaming
             for (int i = 0; i < numbers.Length; i++)
             {
                 if (numbers[i] == id)
-                    s += $"{numbers[i]} ";
+                    s += $"{i} ";
             }
 
             return s.TrimEnd();
