@@ -124,7 +124,7 @@ namespace Fusion.Commands.Gaming
             game.numbers = new ulong[gp.TicketCount];
             game.winningNumbers = new int[5] { -1, -1, -1, -1, -1 };
             game.jackpotAmount = gp.JackpotPrize + existingJackpot;
-            return null;
+            return game;
         }
 
         public async Task<int[]> AllocateTickets(SocketUserMessage msg, int numRequested)
