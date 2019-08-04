@@ -167,10 +167,10 @@ namespace Fusion.Commands.Gaming
             if (allocatedNumbers.Length > 0)
             {
                 string s = string.Empty;
-                for (int i = 0; i < allocatedNumbers.Length - 1; i++)
-                    s += $"{i}, ";
+                for (int i = 0; i < allocatedNumbers.Length; i++)
+                    s += $"{allocatedNumbers[i]} ";
 
-                s += $"{allocatedNumbers[allocatedNumbers.Length - 1]}";
+                s = s.TrimEnd();
 
                 await Sender.PublicReply(msg, $"{msg.Author.Mention} Your lucky numbers are {s}");
 
@@ -199,6 +199,19 @@ namespace Fusion.Commands.Gaming
                     ++x;
             
             return x;
+        }
+
+        public string GetUsersNumbers(ulong id)
+        {
+            
+            string s = string.Empty;
+            for (int i = 0; i < numbers.Length; i++)
+            {
+                if (numbers[i] == id)
+                    s += $"{numbers[i]} ";
+            }
+
+            return s.TrimEnd();
         }
 
         public async Task Draw()
