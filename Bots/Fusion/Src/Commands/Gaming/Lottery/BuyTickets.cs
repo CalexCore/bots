@@ -50,9 +50,7 @@ namespace Fusion.Commands.Gaming
                     //if you can't afford all you have asked for, then you only get what you can afford
                     amount = Math.Min((int)(playerBalance / LotteryManager.CurrentGame.Parameters.TicketCost), amount);
 
-                    int[] allocatedTickets =await  LotteryManager.CurrentGame.AllocateTickets(msg, amount);
-                    if (allocatedTickets.Length == 0)
-                        return;
+                    await LotteryManager.CurrentGame.AllocateTickets(msg, amount);
                 }
             }
             finally

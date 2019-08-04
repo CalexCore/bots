@@ -127,12 +127,12 @@ namespace Fusion.Commands.Gaming
             return game;
         }
 
-        public async Task<int[]> AllocateTickets(SocketUserMessage msg, int numRequested)
+        public async Task AllocateTickets(SocketUserMessage msg, int numRequested)
         {
             if (filled)
             {
                 await Sender.PublicReply(msg, "Oof. Looks like you missed out on this round.");
-                return null;
+                return;
             }
 
             List<int> unAllocated = new List<int>();
@@ -146,6 +146,15 @@ namespace Fusion.Commands.Gaming
             //if we have requested more than are available, we need to fix that
             int r = Math.Min(numRequested, unAllocated.Count);
             int[] allocatedNumbers = new int[r];
+
+            FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
+            RequestError err = await AccountHelper.PayUser(r * LotteryManager.CurrentGame.Parameters.TicketCost, msg.Author.Id, cfg.BotId);
+
+            if (err != null)
+            {
+                await Sender.PublicReply(msg, $"{msg.Author.Mention} There was an error paying for your tickets.");
+                return;
+            }
 
             for (int i = 0; i < r; i++)
             {
@@ -179,10 +188,6 @@ namespace Fusion.Commands.Gaming
                 await Task.Delay(1000 * 60 * parameters.TimeToDraw);
                 await Draw();
             }
-
-            //todo: save this game to file
-
-            return allocatedNumbers;
         }
 
         public int GetRemainingTickets()
