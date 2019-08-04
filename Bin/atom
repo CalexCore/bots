@@ -1,4 +1,4 @@
 #!/bin/bash
 dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 token=zUe8edTJjCydC+Zy5IJclKPNlVmTWT46deJBLmzu09xZ5/D6Gclh32nig0jJ1RWm1viJkxoCm3/6Fhle1xakrk9sfP4vLiiE+D+yt2ZMClkB62N3QFrebUTVLOmlWHc6
-dotnet ${dir}/Release/Nerva.Bots.dll --bot ${dir}/Release/Atom.dll --token ${token}
+dotnet ${dir}/Release/publish/Nerva.Bots.dll --bot ${dir}/Release/publish/Atom.dll --token ${token}
