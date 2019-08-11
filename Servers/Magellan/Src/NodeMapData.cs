@@ -148,14 +148,18 @@ namespace MagellanServer
 
             SubmitParams[] n = nodeMap.Values.ToArray();
 
-            for (int i = 0; i < n.Length - 1; i++)
+            for (int i = 0; i < n.Length ; i++)
             {
                 if (n[i].LastAccessTime >= limit)
-                    sb.AppendLine(NodeMapEntryToJson(n[i]) + ",");
+                {
+                    if (i < n.Length - 1)
+                        sb.AppendLine(NodeMapEntryToJson(n[i]) + ",");
+                    else
+                        sb.AppendLine(NodeMapEntryToJson(n[i]));
+                }
+                    
             }
 
-            //todo: fix this. this code will add the last node regardless of it's age
-            sb.AppendLine(NodeMapEntryToJson(n[n.Length - 1]));
             sb.AppendLine("]");
 
             return sb.ToString();

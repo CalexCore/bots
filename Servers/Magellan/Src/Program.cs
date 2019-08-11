@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using AngryWasp.Helpers;
@@ -59,7 +60,7 @@ namespace MagellanServer
 			{
                 //todo: check file exists
                 Log.Instance.Write("Access keys loaded from file");
-				File.ReadAllText(cmd["access-keys"].Value);
+				Config.AllowedKeys = File.ReadAllLines(cmd["access-keys"].Value).ToList();
 			}    
 
             GeoLocator.ApiKey = apiKey;
@@ -72,7 +73,7 @@ namespace MagellanServer
             Log.Instance.Write($"Listening on port {port}");
             new RpcListener().Start(ds, port);
 
-            Task.Delay(0);
+            Application.Start();
         }
     }
 }
