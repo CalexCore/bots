@@ -92,8 +92,12 @@ namespace MagellanServer
                 {
                     Task.Run( () =>
                     {
+                        new ObjectSerializer().Serialize(r.DataStore, "NodeMap.xml");
+                        Log.Instance.Write("Node map data saved");
+
                         Log.Instance.Write("Saving node map data to json");
                         File.WriteAllText("/var/www/html/nodemap.json", $"{{\"status\":\"OK\",\"result\":{r.DataStore.FetchAll()}}}\r\n");
+
                         mapDataChanged = false;
                     });
                 }

@@ -74,9 +74,6 @@ namespace MagellanServer
                         ok = dataStore.Add(sp, out ne);
                         if (ok)
                         {
-                            new ObjectSerializer().Serialize(dataStore, "NodeMap.xml");
-                            Log.Instance.Write("Node map data saved");
-
                             if (ne)
                                 MapDataChanged?.Invoke();
                         }
@@ -111,8 +108,6 @@ namespace MagellanServer
                         ok = dataStore.Prune(pp, out pc);
                         if (ok && !pp.DryRun)
                         {
-                            new ObjectSerializer().Serialize(dataStore, "NodeMap.xml");
-                            Log.Instance.Write("Node map data saved");
                             if (pc > 0)
                                 MapDataChanged?.Invoke();
                         }
