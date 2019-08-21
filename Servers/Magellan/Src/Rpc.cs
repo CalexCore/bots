@@ -13,6 +13,9 @@ namespace MagellanServer
 {
     public class RpcListener
     {
+        private const string RESULT_OK = "{\"status\":\"OK\"}\r\n";
+        private const string RESULT_BAD = "{\"status\":\"ERROR\"}\r\n";
+
         private NodeMapDataStore dataStore = new NodeMapDataStore();
 
         public NodeMapDataStore DataStore => dataStore;
@@ -61,8 +64,6 @@ namespace MagellanServer
             string method = request.Url.Segments[1];
 
             dynamic json = JObject.Parse(text);
-            bool ok = false;
-            string resultData = null;
 
             Log.Instance.Write($"Received new request: {json.method}");
             switch (json.method.Value)
@@ -71,19 +72,23 @@ namespace MagellanServer
                     {
                         SubmitParams sp = JsonConvert.DeserializeObject<RpcRequest<SubmitParams>>(text).Params;
                         bool ne = false;
-                        ok = dataStore.Add(sp, out ne);
+                        bool ok = dataStore.Add(sp, out ne);
                         if (ok)
                         {
                             if (ne)
                                 MapDataChanged?.Invoke();
                         }
+
+                        string result = ok ? RESULT_OK : RESULT_BAD;
+                        response.OutputStream.Write(Encoding.ASCII.GetBytes(result));
+                        context.Response.Close();
                     }
                     break;
                 case "fetch":
                     {
                         FetchParams fp = JsonConvert.DeserializeObject<RpcRequest<FetchParams>>(text).Params;
-                        resultData = dataStore.Fetch(fp);
-                        ok = true;
+                        response.OutputStream.Write(Encoding.ASCII.GetBytes(dataStore.Fetch(fp)));
+                        context.Response.Close();
                     }
                     break;
                 case "prune":
@@ -93,44 +98,32 @@ namespace MagellanServer
                         if (string.IsNullOrEmpty(pp.Key))
                         {
                             Log.Instance.Write(Log_Severity.Warning, "No access key provided");
-                            ok = false;
-                            break;
+                            return;
                         }
 
                         if (!Config.AllowedKeys.Contains(pp.Key))
                         {
                             Log.Instance.Write(Log_Severity.Warning, "Invalid access key");
-                            ok = false;
-                            break;
+                            return;
                         }
 
                         int pc = 0;
-                        ok = dataStore.Prune(pp, out pc);
+                        bool ok = dataStore.Prune(pp, out pc);
                         if (ok && !pp.DryRun)
                         {
                             if (pc > 0)
                                 MapDataChanged?.Invoke();
                         }
+
+                        string result = ok ? RESULT_OK : RESULT_BAD;
+                        response.OutputStream.Write(Encoding.ASCII.GetBytes(result));
+                        context.Response.Close();
                     }
                     break;
                 default:
                     Log.Instance.Write($"Invalid request: {json.Method}");
                     break;
             }
-
-            string result = string.Empty;
-            if (ok)
-            {
-                if (resultData == null)
-                    result = "{\"status\":\"OK\"}\r\n";
-                else
-                    result = $"{{\"status\":\"OK\",\"result\":{resultData}}}\r\n";
-            }
-            else
-                result = "{\"status\":\"ERROR\"}\r\n";
-
-            response.OutputStream.Write(Encoding.ASCII.GetBytes(result));
-            context.Response.Close();
         }
     }
 }
