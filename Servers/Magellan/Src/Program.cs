@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Xml.Linq;
 using AngryWasp.Helpers;
 using AngryWasp.Logger;
@@ -30,6 +31,9 @@ namespace MagellanServer
                 Log.Instance.Write("Loading node map info");
                 ds = new ObjectSerializer().Deserialize<NodeMapDataStore>(XDocument.Load("NodeMap.xml"));
                 Log.Instance.Write($"Node map loaded {ds.NodeMap.Count} items from file");
+
+                if (!File.Exists("/var/www/html/nodemap.json"))
+                    File.WriteAllText("/var/www/html/nodemap.json", ds.FetchAll());
             }
 
             string apiKey = null;
@@ -71,7 +75,33 @@ namespace MagellanServer
 				port = new IntSerializer().Deserialize(cmd["port"].Value);
 
             Log.Instance.Write($"Listening on port {port}");
-            new RpcListener().Start(ds, port);
+
+            RpcListener r = new RpcListener();
+
+            bool mapDataChanged = false;
+
+            r.MapDataChanged += () => {
+                mapDataChanged = true;
+            };
+
+            //run once every 5 minutes
+            Timer t = new Timer(1000 * 60 * 5);
+            t.Elapsed += (s, e) =>
+            {
+                if (mapDataChanged)
+                {
+                    Task.Run( () =>
+                    {
+                        Log.Instance.Write("Saving node map data to json");
+                        File.WriteAllText("/var/www/html/nodemap.json", r.DataStore.FetchAll());
+                        mapDataChanged = false;
+                    });
+                }
+            };
+
+            t.Start();
+
+            r.Start(ds, port);
 
             Application.Start();
         }

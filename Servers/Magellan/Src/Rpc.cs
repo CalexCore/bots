@@ -15,6 +15,12 @@ namespace MagellanServer
     {
         private NodeMapDataStore dataStore = new NodeMapDataStore();
 
+        public NodeMapDataStore DataStore => dataStore;
+
+        public delegate void MapDataChangedEventHandler();
+
+        public event MapDataChangedEventHandler MapDataChanged;
+
         public void Start(NodeMapDataStore ds, int port)
         {
             dataStore = ds;
@@ -32,7 +38,9 @@ namespace MagellanServer
                 {
                     HttpListenerContext context = listener.GetContext();
                     HttpListenerRequest request = context.Request;
-                    HandleRequest(context);
+                    Task.Run( () => {
+                        HandleRequest(context);
+                    });
                 }
             });
         }
@@ -62,11 +70,15 @@ namespace MagellanServer
                 case "submit":
                     {
                         SubmitParams sp = JsonConvert.DeserializeObject<RpcRequest<SubmitParams>>(text).Params;
-                        ok = dataStore.Add(sp);
+                        bool ne = false;
+                        ok = dataStore.Add(sp, out ne);
                         if (ok)
                         {
                             new ObjectSerializer().Serialize(dataStore, "NodeMap.xml");
                             Log.Instance.Write("Node map data saved");
+
+                            if (ne)
+                                MapDataChanged?.Invoke();
                         }
                     }
                     break;
@@ -95,12 +107,14 @@ namespace MagellanServer
                             break;
                         }
 
-                        
-                        ok = dataStore.Prune(pp);
+                        int pc = 0;
+                        ok = dataStore.Prune(pp, out pc);
                         if (ok && !pp.DryRun)
                         {
                             new ObjectSerializer().Serialize(dataStore, "NodeMap.xml");
                             Log.Instance.Write("Node map data saved");
+                            if (pc > 0)
+                                MapDataChanged?.Invoke();
                         }
                     }
                     break;
