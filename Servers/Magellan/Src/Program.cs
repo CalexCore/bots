@@ -33,7 +33,7 @@ namespace MagellanServer
                 Log.Instance.Write($"Node map loaded {ds.NodeMap.Count} items from file");
 
                 if (!File.Exists("/var/www/html/nodemap.json"))
-                    File.WriteAllText("/var/www/html/nodemap.json", ds.FetchAll());
+                    File.WriteAllText("/var/www/html/nodemap.json", $"{{\"status\":\"OK\",\"result\":{ds.FetchAll()}}}\r\n");
             }
 
             string apiKey = null;
@@ -93,7 +93,7 @@ namespace MagellanServer
                     Task.Run( () =>
                     {
                         Log.Instance.Write("Saving node map data to json");
-                        File.WriteAllText("/var/www/html/nodemap.json", r.DataStore.FetchAll());
+                        File.WriteAllText("/var/www/html/nodemap.json", $"{{\"status\":\"OK\",\"result\":{r.DataStore.FetchAll()}}}\r\n");
                         mapDataChanged = false;
                     });
                 }
