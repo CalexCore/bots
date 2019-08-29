@@ -4,6 +4,8 @@ using Nerva.Bots;
 using Nerva.Bots.Plugin;
 using Nerva.Rpc.Wallet;
 
+#pragma warning disable 4014
+
 namespace Fusion.Commands
 {
     [Command("rescan", "Rescans the wallet to fix any funkiness. Not for you")]
@@ -21,7 +23,7 @@ namespace Fusion.Commands
                 return;
             }
 
-            await new RescanBlockchain( (c) =>
+            new RescanBlockchain( (c) =>
             {
                 Sender.PrivateReply(msg, "Rescan of donation wallet complete.").Wait();
             }, (e) =>
@@ -29,7 +31,7 @@ namespace Fusion.Commands
                 Sender.PrivateReply(msg, "Oof. Couldn't rescan donation wallet.").Wait();
             }, cfg.WalletHost, cfg.DonationWalletPort).RunAsync();
 
-            await new RescanBlockchain( (c) =>
+            new RescanBlockchain( (c) =>
             {
                 Sender.PrivateReply(msg, "Rescan of user wallet complete.").Wait();
             }, (e) =>
