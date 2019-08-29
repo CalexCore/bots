@@ -1,0 +1,4 @@
+#!/bin/bash
+dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+port=12657
+nerva-wallet-rpc --daemon-address 127.0.0.1:17566 --disable-rpc-login --rpc-bind-port ${port} --wallet-dir ${dir}/Wallets --prompt-for-password
