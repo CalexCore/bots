@@ -120,6 +120,18 @@ namespace MagellanServer
                         context.Response.Close();
                     }
                     break;
+                case "save":
+                    {
+                        Task.Run( () =>
+                        {
+                            new ObjectSerializer().Serialize(dataStore, "NodeMap.xml");
+                            Log.Instance.Write("Node map data saved");
+
+                            Log.Instance.Write("Saving node map data to json");
+                            File.WriteAllText("/var/www/html/nodemap.json", $"{{\"status\":\"OK\",\"result\":{dataStore.FetchAll()}}}\r\n");
+                        });
+                    }
+                    break;
                 default:
                     Log.Instance.Write($"Invalid request: {json.Method}");
                     break;
