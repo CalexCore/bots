@@ -8,9 +8,9 @@ namespace Nerva.Bots.Commands
     [Command("ping", "Make sure the bot is alive")]
     public class Ping : ICommand
     {
-        public void Process(SocketUserMessage msg)
+        public async Task Process(SocketUserMessage msg)
         {
-            DiscordResponse.Reply(msg, text: "Pong!");
+            await DiscordResponse.Reply(msg, text: "Pong!");
         }
     }
 }

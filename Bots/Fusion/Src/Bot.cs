@@ -1,31 +1,51 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using AngryWasp.Helpers;
-using Discord.WebSocket;
-using Nerva.Bots.Helpers;
 using Nerva.Bots.Plugin;
 using Nerva.Rpc;
 using Nerva.Rpc.Wallet;
 using Newtonsoft.Json;
 using Log = Nerva.Bots.Helpers.Log;
+using System.Collections.Generic;
+using Fusion.Commands.Gaming;
 
 namespace Fusion
 {
-     public class FusionBotConfig : IBotConfig
+    public class FusionBotConfig : IBotConfig
     {
-        public ulong OwnerID => 407511685134549003;
-        public ulong ServerID => 439649936414474256;
-        public ulong BotID => 466512207396732939;
-        public ulong BotChannelID => 466873635638870016;
+		public ulong BotId => 466512207396732939;
+
+        public List<ulong> BotChannelIds => new List<ulong>
+		{
+			466873635638870016, //Fusion
+			595232529456562198, //CB-General
+			595231506209701908, //CB-ST
+			504717279573835832, //AM-XNV
+			509444814404714501, //AM-Bots
+
+		};
+
+		public List<ulong> DevRoleIds => new List<ulong>
+		{
+			595498219987927050, //NV-BotCommander
+            595495919097741322, //AM-BotCommander
+            595495392632766474, //LB-BotCommander
+		};
+
         public string CmdPrefix => "$";
 
-        public uint WalletPort { get; set; } = (uint)MathHelper.Random.NextInt(10000, 50000);
+		public string WalletHost { get; } = "http://127.0.0.1";
+
+        public uint DonationWalletPort { get; set; } = (uint)MathHelper.Random.NextInt(10000, 50000);
+
+		public uint UserWalletPort { get; set; } = (uint)MathHelper.Random.NextInt(10000, 50000);
 
         public AccountJson AccountJson { get; set; } = null;
 
         public string DonationPaymentIdKey { get; set; } = null;
+
+		public Dictionary<ulong, Tuple<uint, string>> UserWalletCache { get; } = new Dictionary<ulong, Tuple<uint, string>>();
     }
 
     public class FusionBot : IBot
@@ -37,55 +57,116 @@ namespace Fusion
 
         public void Init(CommandLineParser cmd)
         {
-            Process[] pl = Process.GetProcessesByName("nerva-wallet-rpc");
+			AngryWasp.Serializer.Serializer.Initialize();
 
-            foreach (var p in pl)
-            {
-                p.Kill();
-                p.WaitForExit();
-            }
+            if (cmd["donation-wallet-port"] != null)
+				cfg.DonationWalletPort = uint.Parse(cmd["donation-wallet-port"].Value);
 
-            if (cmd["port"] != null)
-				cfg.WalletPort = uint.Parse(cmd["port"].Value);
+			if (cmd["user-wallet-port"] != null)
+				cfg.UserWalletPort = uint.Parse(cmd["user-wallet-port"].Value);
 
-			string walletFile = string.Empty, walletPassword = string.Empty;
-			string keyFilePassword = null;
+			string donationWalletFile = string.Empty, donationWalletPassword = string.Empty;
+			string userWalletFile = string.Empty, userWalletPassword = string.Empty;
 
 			if (cmd["key-file"] != null)
 			{
 				string[] keys = File.ReadAllLines(cmd["key-file"].Value);
-				keyFilePassword = PasswordPrompt.Get();
+				string keyFilePassword = PasswordPrompt.Get("Please enter the key file decryption password");
 
-				walletPassword = keys[0].Decrypt(keyFilePassword);
-				cfg.DonationPaymentIdKey = keys[1].Decrypt(keyFilePassword);
+				donationWalletPassword = keys[0].Decrypt(keyFilePassword);
+				userWalletPassword = keys[1].Decrypt(keyFilePassword);
+				cfg.DonationPaymentIdKey = keys[2].Decrypt(keyFilePassword);
 
 				keyFilePassword = null;
 			}
 			else
 			{
-				Console.WriteLine("Please enter the donation wallet password");
-				walletPassword = Console.ReadLine();
-
-				Console.WriteLine("Please enter the payment id encryption key");
-				cfg.DonationPaymentIdKey = Console.ReadLine();
+				donationWalletPassword = PasswordPrompt.Get("Please enter the donation wallet password");
+				userWalletPassword = PasswordPrompt.Get("Please enter the user wallet password");
+				cfg.DonationPaymentIdKey = PasswordPrompt.Get("Please enter the payment id encryption key");
 			}
 
-			if (cmd["wallet"] != null)
-				walletFile = cmd["wallet"].Value;
+			if (cmd["donation-wallet-file"] != null)
+				donationWalletFile = cmd["donation-wallet-file"].Value;
 
-			string jsonFile = Path.Combine(Environment.CurrentDirectory, $"Wallets/{walletFile}.json");
+			if (cmd["user-wallet-file"] != null)
+				userWalletFile = cmd["user-wallet-file"].Value;
+
+			string jsonFile = Path.Combine(Environment.CurrentDirectory, $"Wallets/{donationWalletFile}.json");
 			Log.Write($"Loading Wallet JSON: {jsonFile}");
 			cfg.AccountJson = JsonConvert.DeserializeObject<AccountJson>(File.ReadAllText(jsonFile));
 
-			new OpenWallet(new OpenWalletRequestData {
-				FileName = walletFile,
-				Password = walletPassword
-			}, (string result) => {
+			new OpenWallet(new OpenWalletRequestData 
+			{
+				FileName = donationWalletFile,
+				Password = donationWalletPassword
+			},
+			(string result) => 
+			{
 				Log.Write("Wallet loaded");
-			}, (RequestError error) => {
-				Log.Write("Failed to load wallet");
+			},
+			(RequestError error) => 
+			{
+				Log.Write("Failed to load donation wallet");
 				Environment.Exit(1);
-			}, cfg.WalletPort).Run();
+			}, 
+			cfg.WalletHost, cfg.DonationWalletPort).Run();
+
+			new OpenWallet(new OpenWalletRequestData {
+				FileName = userWalletFile,
+				Password = userWalletPassword
+			},
+			(string r1) =>
+			{
+				Log.Write("Wallet loaded");
+				new GetAccounts(null, (GetAccountsResponseData r2) =>
+				{
+					foreach (var a in r2.Accounts)
+					{
+						ulong uid = 0;
+
+						if (ulong.TryParse(a.Label, out uid))
+						{
+							if (!cfg.UserWalletCache.ContainsKey(uid))
+							{
+								cfg.UserWalletCache.Add(uid, new Tuple<uint, string>(a.Index, a.BaseAddress));
+								Log.Write($"Loaded wallet for user: {a.Label} - {a.BaseAddress}");
+							}
+							else
+								Log.Write($"Duplicate wallet detected for user with id: {uid}");
+						}
+						else
+						{
+							//fusion owns address index 0
+							if (a.Index == 0)
+								cfg.UserWalletCache.Add(cfg.BotId, new Tuple<uint, string>(a.Index, a.BaseAddress));
+							else
+								Log.Write($"Account index {a.Index} is not associated with a user");
+						}
+					}
+				},
+				(RequestError error) =>
+				{
+					Log.Write("Failed to load user wallet");
+					Environment.Exit(1);
+				},
+				cfg.WalletHost, cfg.UserWalletPort).Run();
+			},
+			(RequestError error) =>
+			{
+				Log.Write("Failed to load user wallet");
+				Environment.Exit(1);
+			},
+			cfg.WalletHost, cfg.UserWalletPort).Run();
+
+			//todo: Check if an existing game is still running after restart and load that instead
+
+			string fp = Path.Combine(Environment.CurrentDirectory, "lottery.xml");
+
+			if (File.Exists(fp))
+				LotteryManager.Load(fp);
+			else
+				LotteryManager.Start();
         }
     }
 }

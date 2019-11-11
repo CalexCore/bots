@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Xml.Linq;
 using AngryWasp.Logger;
 using AngryWasp.Serializer;
 using Newtonsoft.Json;
@@ -71,9 +71,10 @@ namespace MagellanServer
 
         public Dictionary<string, SubmitParams> NodeMap => nodeMap;
 
-        public bool Add(SubmitParams e)
+        public bool Add(SubmitParams e, out bool newEntryCreated)
         {
             string hash = e.Address.GetHashString();
+            newEntryCreated = false;
 
             if (nodeMap.ContainsKey(hash))
             {
@@ -94,6 +95,7 @@ namespace MagellanServer
                     e.CountryCode = countryCode;
                     nodeMap.Add(hash, e);
                     Log.Instance.Write("Node map entry created");
+                    newEntryCreated = true;
                 }
                 else
                     return false;
@@ -102,11 +104,11 @@ namespace MagellanServer
             return true;
         }
 
-        public bool Prune(PruneParams pp)
+        public bool Prune(PruneParams pp, out int prunedCount)
         {
             ulong limit = pp.Time - (86400 * pp.Limit);
 
-            int count = 0;
+            prunedCount = 0;
 
             try
             {
@@ -114,9 +116,9 @@ namespace MagellanServer
                 {
                     foreach (var n in nodeMap.Values)
                         if (n.LastAccessTime < limit)
-                            ++count;
+                            ++prunedCount;
 
-                    Log.Instance.Write($"{count} nodes older than {pp.Limit} days");
+                    Log.Instance.Write($"{prunedCount} nodes older than {pp.Limit} days");
                 }
                 else
                 {
@@ -124,7 +126,7 @@ namespace MagellanServer
 
                     foreach (var n in nodeMap)
                         if (n.Value.LastAccessTime < limit)
-                            ++count;
+                            ++prunedCount;
                         else
                             prunedMap.Add(n.Key, n.Value);
 
@@ -142,6 +144,12 @@ namespace MagellanServer
 
         public string Fetch(FetchParams fp)
         {
+            if (File.Exists("/var/www/html/nodemap.json"))
+            {
+                Log.Instance.Write("Fetching from text file");
+                return File.ReadAllText("/var/www/html/nodemap.json");
+            }
+            
             ulong limit = fp.Time - (86400 * fp.Limit);
 
             StringBuilder sb = new StringBuilder();
@@ -149,14 +157,37 @@ namespace MagellanServer
 
             SubmitParams[] n = nodeMap.Values.ToArray();
 
-            for (int i = 0; i < n.Length - 1; i++)
+            for (int i = 0; i < n.Length ; i++)
             {
                 if (n[i].LastAccessTime >= limit)
-                    sb.AppendLine(NodeMapEntryToJson(n[i]) + ",");
+                {
+                    if (i < n.Length - 1)
+                        sb.AppendLine(NodeMapEntryToJson(n[i]) + ",");
+                    else
+                        sb.AppendLine(NodeMapEntryToJson(n[i]));
+                }
             }
 
-            //todo: fix this. this code will add the last node regardless of it's age
-            sb.AppendLine(NodeMapEntryToJson(n[n.Length - 1]));
+            sb.AppendLine("]");
+
+            return sb.ToString();
+        }
+
+        public string FetchAll()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("[");
+
+            SubmitParams[] n = nodeMap.Values.ToArray();
+
+            for (int i = 0; i < n.Length ; i++)
+            {
+                if (i < n.Length - 1)
+                    sb.AppendLine(NodeMapEntryToJson(n[i]) + ",");
+                else
+                    sb.AppendLine(NodeMapEntryToJson(n[i]));    
+            }
+
             sb.AppendLine("]");
 
             return sb.ToString();

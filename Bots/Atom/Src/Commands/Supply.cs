@@ -1,5 +1,4 @@
-using System;
-using Atom;
+using System.Threading.Tasks;
 using Discord.WebSocket;
 using Nerva.Bots.Helpers;
 using Nerva.Bots.Plugin;
@@ -10,13 +9,13 @@ namespace Atom.Commands
     [Command("supply", "Get the current circulating supply")]
     public class Supply : ICommand
     {
-        public void Process(SocketUserMessage msg)
+        public async Task Process(SocketUserMessage msg)
         {
-            string result;
-            if (Request.Api("getgeneratedcoins", msg.Channel, out result))
+            RequestData rd = await Request.Api(AtomBotConfig.SeedNodes, "daemon/get_generated_coins", msg.Channel);
+            if (!rd.IsError)
             {
-                ulong coins = JsonConvert.DeserializeObject<JsonResult<GetGeneratedCoins>>(result).Result.Coins;
-                DiscordResponse.Reply(msg, text: $"Current Supply: {coins.FromAtomicUnits()}");
+                ulong coins = JsonConvert.DeserializeObject<JsonResult<GetGeneratedCoins>>(rd.ResultString).Result.Coins;
+                await DiscordResponse.Reply(msg, text: $"Current Supply: {coins.FromAtomicUnits()}");
             }
         }
     }

@@ -9,15 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atom", "Bots\Atom\Atom.cspr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusion", "Bots\Fusion\Fusion.csproj", "{9F84650E-7F88-4AC2-B084-FA19B9D988A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Magellan", "Bots\Magellan\Magellan.csproj", "{9F84650E-7F88-4AC2-B084-FA19B9D988A7}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringEncrypter", "Tools\StringEncrypter\StringEncrypter.csproj", "{9F84650E-7F88-4AC2-B084-FA19B9D988A8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentIdEncrypter", "Tools\PaymentIdEncrypter\PaymentIdEncrypter.csproj", "{9F84650E-7F88-4AC2-B084-FA19B9D988A9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PeerListScraper", "Tools\PeerListScraper\PeerListScraper.csproj", "{9C84650E-7F88-4AC2-B084-FA19B9D988A9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudMiningListGen", "Tools\CloudMiningListGen\CloudMiningListGen.csproj", "{9C94650E-7F88-4AC2-B084-FA19B9D988A9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MagellanServer", "Servers\Magellan\Magellan.csproj", "{9F84650E-7F88-4AC2-B084-FA29B9D989A9}"
 EndProject
@@ -52,13 +48,6 @@ Global
 		{9F84650E-7F88-4AC2-B084-FA19B9D988A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F84650E-7F88-4AC2-B084-FA19B9D988A6}.Release|Any CPU.Build.0 = Release|Any CPU
 
-		{9F84650E-7F88-4AC2-B084-FA19B9D988A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9F84650E-7F88-4AC2-B084-FA19B9D988A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9F84650E-7F88-4AC2-B084-FA19B9D988A7}.PortableDebug|Any CPU.ActiveCfg = PortableDebug|Any CPU
-		{9F84650E-7F88-4AC2-B084-FA19B9D988A7}.PortableDebug|Any CPU.Build.0 = PortableDebug|Any CPU
-		{9F84650E-7F88-4AC2-B084-FA19B9D988A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9F84650E-7F88-4AC2-B084-FA19B9D988A7}.Release|Any CPU.Build.0 = Release|Any CPU
-
 		{9F84650E-7F88-4AC2-B084-FA19B9D988A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9F84650E-7F88-4AC2-B084-FA19B9D988A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F84650E-7F88-4AC2-B084-FA19B9D988A8}.PortableDebug|Any CPU.ActiveCfg = PortableDebug|Any CPU
@@ -79,13 +68,6 @@ Global
 		{9C84650E-7F88-4AC2-B084-FA19B9D988A9}.PortableDebug|Any CPU.Build.0 = PortableDebug|Any CPU
 		{9C84650E-7F88-4AC2-B084-FA19B9D988A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C84650E-7F88-4AC2-B084-FA19B9D988A9}.Release|Any CPU.Build.0 = Release|Any CPU
-
-		{9C94650E-7F88-4AC2-B084-FA19B9D988A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9C94650E-7F88-4AC2-B084-FA19B9D988A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9C94650E-7F88-4AC2-B084-FA19B9D988A9}.PortableDebug|Any CPU.ActiveCfg = PortableDebug|Any CPU
-		{9C94650E-7F88-4AC2-B084-FA19B9D988A9}.PortableDebug|Any CPU.Build.0 = PortableDebug|Any CPU
-		{9C94650E-7F88-4AC2-B084-FA19B9D988A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9C94650E-7F88-4AC2-B084-FA19B9D988A9}.Release|Any CPU.Build.0 = Release|Any CPU
 
 		{9F84650E-7F88-4AC2-B084-FA29B9D989A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9F84650E-7F88-4AC2-B084-FA29B9D989A9}.Debug|Any CPU.Build.0 = Debug|Any CPU

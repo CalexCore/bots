@@ -1,7 +1,4 @@
-using System;
-using System.IO;
-using System.Text;
-using Atom;
+using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Nerva.Bots;
@@ -14,31 +11,37 @@ namespace Atom.Commands
     [Command("seeds", "Get seed node info")]
     public class Seeds : ICommand
     {
-        public void Process(SocketUserMessage msg)
+        public async Task Process(SocketUserMessage msg)
         {
-            NodeInfo seed1 = null;
-            NodeInfo seed2 = null;
-
-            string result;
-            if (Request.Http($"https://xnv1.getnerva.org/api/getinfo.php", out result))
-                seed1 = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(result).Result;
-
-            if (Request.Http($"https://xnv2.getnerva.org/api/getinfo.php", out result))
-                seed2 = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(result).Result;
-
             var em = new EmbedBuilder()
             .WithAuthor("Seed Node Information", Globals.Client.CurrentUser.GetAvatarUrl())
             .WithDescription("The latest seed node status")
             .WithColor(Color.DarkMagenta)
             .WithThumbnailUrl(Globals.Client.CurrentUser.GetAvatarUrl());
 
-            string s1 = GetSeedInfoString(seed1);
-            string s2 = GetSeedInfoString(seed2);
+            int x = 0;
+            foreach (var s in AtomBotConfig.SeedNodes)
+            {
+                ++x;
 
-            em.AddField("XNV-1", s1, true);
-            em.AddField("XNV-2", s2, true);
+                try
+                {
+                    NodeInfo ni = null;
+                    RequestData rd = await Request.Http($"{s}/api/daemon/get_info/");
+                    if (!rd.IsError)
+                        ni = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(rd.ResultString).Result;
 
-            DiscordResponse.Reply(msg, embed: em.Build());
+                    em.AddField($"Seed {x}", GetSeedInfoString(ni), true);
+                }
+                catch
+                {
+                    em.AddField($"Seed {x}", "Not Available", true);
+                    continue;
+                }
+                
+            }
+
+            await DiscordResponse.Reply(msg, embed: em.Build());
         }
 
         private string GetSeedInfoString(NodeInfo s)

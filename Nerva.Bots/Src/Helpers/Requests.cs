@@ -1,6 +1,4 @@
 using System;
-using System.IO;
-using System.Net;
 using System.Threading.Tasks;
 using AngryWasp.Helpers;
 using AngryWasp.Logger;
@@ -9,64 +7,88 @@ using Discord.WebSocket;
 
 namespace Nerva.Bots.Helpers
 {
+    public class RequestData
+    {
+        public string ResultString { get; set; }
+
+        public string ErrorString { get; set; }
+        public bool IsError => !string.IsNullOrEmpty(ErrorString);
+    }
+
     public class Request
     {
-        public static bool Api(string method, ISocketMessageChannel channel, out string resultString)
+        public static async Task<RequestData> Api(string[] apiLinks, string method, ISocketMessageChannel channel)
         {
-            string[] apiLinks = new string[]
-            {
-                "xnv1.getnerva.org",
-                "xnv2.getnerva.org"
-            };
-
-            resultString = null;
-
             for (int i = 0; i < apiLinks.Length; i++)
-                if (Http($"https://{apiLinks[i]}/api/{method}.php", out resultString))
-                    return true;
+            {
+                RequestData rd = await Http($"{apiLinks[i]}/api/{method}/");
 
-            channel.SendMessageAsync("Sorry... All API's are down. The zombie apocalyse is upon us! :scream:");
-            return false;
+                if (!rd.IsError)
+                    return rd;
+            }
+
+            await channel.SendMessageAsync("Sorry... All API's are down. The zombie apocalyse is upon us! :scream:");
+            return null;
         }
 
-        public static bool Http(string url, out string returnString)
-        {
-            string error = null;
-            if (NetHelper.HttpRequest(url, out returnString, out error))
-                return true;
 
-            Log.Write(Log_Severity.Error, error);
-            return false;
+        public static async Task<RequestData> Http(string url)
+        {
+            string rs = null, e = null;
+
+            if (!NetHelper.HttpRequest(url, out rs, out e))
+                await Log.Write(Log_Severity.Error, e);
+
+            return new RequestData
+            {
+                ErrorString = e,
+                ResultString = rs
+            };
         }
     }
 
     public class DiscordResponse
     {
-        public static void Reply(SocketUserMessage msg, bool privateOnly = false, string text = null, Embed embed = null)
+        public static async Task Reply(SocketUserMessage msg, bool privateOnly = false, string text = null, Embed embed = null)
         {
-            if (text == null)
-                text = string.Empty;
-
-            bool isDev = (msg.Author.Id == Globals.Bot.Config.OwnerID);
-
-            //only angrywasp is allowed to post anywhere
-            //todo: make a role that give people authority to issue bot commands from anywhere
-            if (isDev && Globals.DevMode)
+            try
             {
-                msg.Channel.SendMessageAsync(text, false, embed);
-                return;
-            }
+                if (text == null)
+                    text = string.Empty;
 
-            //we only show the message if the channel is the bot channel
-            //privateOnly allows a per message override to force the reply to a DM
-            //otherwise we send the user a dm and delete the message
-            if (msg.Channel.Id == Globals.Bot.Config.BotChannelID && !privateOnly)
-                msg.Channel.SendMessageAsync(text, false, embed);
-            else
-            {
-                Discord.UserExtensions.SendMessageAsync(msg.Author, text, false, embed);
                 if (msg.Channel.GetType() != typeof(SocketDMChannel))
-                    msg.DeleteAsync();
+                {
+                    bool isRole = false;
+                    var userRoles = ((SocketGuildUser)msg.Author).Roles;
+                    foreach(SocketRole role in userRoles)
+                        if (Globals.Bot.Config.DevRoleIds.Contains(role.Id))
+                        {
+                            isRole = true;
+                            break;
+                        }
+                    
+                    if (isRole)
+                    {
+                        await msg.Channel.SendMessageAsync(text, false, embed);
+                        return;
+                    }
+
+                    if (Globals.Bot.Config.BotChannelIds.Contains(msg.Channel.Id) && !privateOnly)
+                        await msg.Channel.SendMessageAsync(text, false, embed);
+                    else
+                    {
+                        await Discord.UserExtensions.SendMessageAsync(msg.Author, text, false, embed);
+                        await msg.DeleteAsync();
+                    }
+                }
+                else
+                {
+                    await Discord.UserExtensions.SendMessageAsync(msg.Author, text, false, embed);
+                }
+            }
+            catch (Exception)
+            {
+                await Log.Write($"Count not send reply to {msg.Author.Username}");
             }
         }
     }

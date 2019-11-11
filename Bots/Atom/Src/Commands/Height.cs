@@ -1,4 +1,4 @@
-using Atom;
+using System.Threading.Tasks;
 using Discord.WebSocket;
 using Nerva.Bots.Helpers;
 using Nerva.Bots.Plugin;
@@ -9,13 +9,13 @@ namespace Atom.Commands
     [Command("height", "Get the current chain height")]
     public class Height : ICommand
     {
-        public void Process(SocketUserMessage msg)
+        public async Task Process(SocketUserMessage msg)
         {
-            string result;
-            if (Request.Api("getblockcount", msg.Channel, out result))
+            RequestData rd = await Request.Api(AtomBotConfig.SeedNodes, "daemon/get_block_count", msg.Channel);
+            if (!rd.IsError)
             {
-                ulong count = JsonConvert.DeserializeObject<JsonResult<GetBlockCount>>(result).Result.Count;
-                DiscordResponse.Reply(msg, text: $"Current height: {count}");
+                ulong count = JsonConvert.DeserializeObject<JsonResult<GetBlockCount>>(rd.ResultString).Result.Count;
+                await DiscordResponse.Reply(msg, text: $"Current height: {count}");
             }
         }
     }

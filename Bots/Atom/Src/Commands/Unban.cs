@@ -1,7 +1,6 @@
 using System.Text.RegularExpressions;
-using Discord;
+using System.Threading.Tasks;
 using Discord.WebSocket;
-using Nerva.Bots;
 using Nerva.Bots.Helpers;
 using Nerva.Bots.Plugin;
 
@@ -10,27 +9,41 @@ namespace Atom.Commands
     [Command("unban", "Get yourself unbanned from the seed nodes")]
     public class Unban : ICommand
     {
-        public void Process(SocketUserMessage msg)
+        public async Task Process(SocketUserMessage msg)
         {
             var matches = Regex.Matches(msg.Content.ToLower(), @"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}");
 
             if (matches.Count == 0)
             {
-                DiscordResponse.Reply(msg, text: "Need an IP to unban!");
+                await DiscordResponse.Reply(msg, text: "Need an IP to unban!");
                 return;
             }
+
             foreach (var m in matches)
             {
-                string m2;
+                bool partialFail = false;
+                bool allFail = true;
                 string ip = m.ToString();
-                string result;
-                if (!Request.Http($"https://xnv1.getnerva.org/api/setbans.php?ip={ip}&ban=false&time=0", out result) ||
-                    !Request.Http($"https://xnv2.getnerva.org/api/setbans.php?ip={ip}&ban=false&time=0", out result))
-                    m2 = $"Sorry, couldn't totally unban IP {ip}";
-                else
-                    m2 = $"{ip} has been unbanned";
 
-                DiscordResponse.Reply(msg, text: m2);
+                foreach (var s in AtomBotConfig.SeedNodes)
+                {
+                    RequestData rd = await Request.Http($"{s}/api/daemon/set_bans/?ip={ip}&ban=false&time=0");
+                    if (!rd.IsError)
+                        allFail = false;
+                    else
+                        partialFail = true;
+                }
+
+                string result = null;
+
+                if (allFail)
+                    result = $"An error occurred attempting to unban IP {ip}";
+                else if (partialFail)
+                    result = $"IP {ip} could not be unbanned from all seed nodes";
+                else
+                    result = $"IP {ip} unbanned successfully";
+
+                await DiscordResponse.Reply(msg, text: result);
             }
         }
     }

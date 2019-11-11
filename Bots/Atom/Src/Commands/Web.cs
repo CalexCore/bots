@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Nerva.Bots;
@@ -9,7 +10,7 @@ namespace Atom.Commands
     [Command("web", "Get some useful web links")]
     public class Web : ICommand
     {
-        public void Process(SocketUserMessage msg)
+        public async Task Process(SocketUserMessage msg)
         {
             var em = new EmbedBuilder()
             .WithAuthor("Web Links", Globals.Client.CurrentUser.GetAvatarUrl())
@@ -26,7 +27,7 @@ namespace Atom.Commands
             em.AddField("CPU Benchmarks", "[Forkmaps.com](https://forkmaps.com/#/benchmarks)", true);
             em.AddField("Public Node hosted by Hooftly", "[pubnodes.com](https://www.pubnodes.com/) | [Explorer](https://xnvex.pubnodes.com)");
 
-            DiscordResponse.Reply(msg, embed: em.Build());
+            await DiscordResponse.Reply(msg, embed: em.Build());
         }
     }
 }

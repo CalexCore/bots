@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Nerva.Bots;
@@ -11,12 +12,12 @@ namespace Atom.Commands
     [Command("tradeogre", "Get market info from TradeOgre")]
     public class TradeOgre : ICommand
     {
-        public void Process(SocketUserMessage msg)
+        public async Task Process(SocketUserMessage msg)
         {
-            string result;
-            if (Request.Http("https://tradeogre.com/api/v1/ticker/btc-xnv", out result))
+            RequestData rd = await Request.Http("https://tradeogre.com/api/v1/ticker/btc-xnv");
+            if (!rd.IsError)
             {
-                var json = JsonConvert.DeserializeObject<MarketInfo>(result);
+                var json = JsonConvert.DeserializeObject<MarketInfo>(rd.ResultString);
 
                 var em = new EmbedBuilder()
                 .WithAuthor("TradeOgre Details", Globals.Client.CurrentUser.GetAvatarUrl())
@@ -30,7 +31,7 @@ namespace Atom.Commands
                 em.AddField("High", json.High * 100000000.0d, true);
                 em.AddField("Low", json.Low * 100000000.0d, true);
 
-                DiscordResponse.Reply(msg, embed: em.Build());
+                await DiscordResponse.Reply(msg, embed: em.Build());
             }
         }
     }

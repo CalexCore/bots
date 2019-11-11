@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Xml.Linq;
 using AngryWasp.Helpers;
@@ -43,15 +42,17 @@ namespace Tools
                 nmap = new ObjectSerializer().Deserialize<NodeMapDataStore>(XDocument.Load("NodeMap.xml"));
             }
 
-            RunList(peerList.GrayList, ref nmap);
-            RunList(peerList.WhiteList, ref nmap);
+            bool ne;
+            RunList(peerList.GrayList, ref nmap, out ne);
+            RunList(peerList.WhiteList, ref nmap, out ne);
 
             new ObjectSerializer().Serialize(nmap, "NodeMap.xml");
             Log.Instance.Write($"DONE! {nmap.NodeMap.Count} nodes in map");
         }
 
-        private static void RunList(List<GetPeerListResponseDataItem> list, ref NodeMapDataStore nmap)
+        private static void RunList(List<GetPeerListResponseDataItem> list, ref NodeMapDataStore nmap, out bool newEntryCreated)
         {
+            newEntryCreated = false;
             foreach (var p in list)
             {
                 string ip = GetIpFromInteger(p.IP);
@@ -80,7 +81,7 @@ namespace Tools
                 e.LastAccessTime = ts;
                 e.Version = "0.0.0.0";
 
-                if (nmap.Add(e))
+                if (nmap.Add(e, out newEntryCreated))
                     Log.Instance.Write($"Added IP: {ip}");
             }
         }

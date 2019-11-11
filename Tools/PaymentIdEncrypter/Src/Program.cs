@@ -1,7 +1,5 @@
 using System;
 using System.Text;
-using System.Security.Cryptography;
-using System.IO;
 using System.Linq;
 using AngryWasp.Helpers;
 using AngryWasp.Logger;
@@ -9,8 +7,6 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Modes;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Engines;
-using Nerva.Bots;
-using Nerva.Bots.Helpers;
 using Log = AngryWasp.Logger.Log;
 
 namespace Tools

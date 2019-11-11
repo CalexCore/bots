@@ -2,7 +2,12 @@ Bin/encrypt-tokens
 Bin/geo-api-key
 Bin/fusion-keys
 Bin/magellan-api-keys
-Bin/tile
-**/Bin/Release
+
 **/Bin/Debug
+**/Bin/Release
+**/Bin/Wallets
+
 **/obj
+**/**/*.log
+**/**/*.cache
+**/**/*.keys

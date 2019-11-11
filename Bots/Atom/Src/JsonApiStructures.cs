@@ -69,32 +69,6 @@ namespace Atom
     }
 
     [JsonObject]
-    public class NanexInfo
-    {
-        [JsonProperty("volume")]
-        public double BaseVolume { get; set; }
-
-        [JsonProperty("quote_volume")]
-        public double QuoteVolume { get; set; }
-
-        [JsonProperty("last_trade")]
-        public double LastTrade { get; set; }
-
-        [JsonProperty("price_change")]
-        public double PriceChange { get; set; }
-    }
-
-    [JsonObject]
-    public class WhaleBuy
-    {
-        [JsonProperty("buy")]
-        public Dictionary<double, double> Buy { get; set; }
-        
-        [JsonProperty("sell")]
-        public Dictionary<double, double> Sell { get; set; }
-    }
-
-    [JsonObject]
     public class CoinGeckoInfo
     {
         [JsonProperty("market_cap_rank")]
@@ -189,5 +163,26 @@ namespace Atom
 
         [JsonProperty("bootstrap")]
         public string[] BootstrapFiles { get; set; }
+    }
+
+    [JsonObject]
+    public class BanList
+    {
+        [JsonProperty("bans")]
+        public List<BanListItem> Bans { get; set; }
+    }
+
+    [JsonObject]
+    public class BanListItem
+    {
+        [JsonProperty("host")]
+        public string Host { get; set; }
+
+        [JsonProperty("ban")]
+        public bool Banned { get; set; } = true;
+
+        [JsonProperty("seconds")]
+        public uint Seconds => 6000;
+
     }
 }
