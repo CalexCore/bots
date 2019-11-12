@@ -1,3 +1,6 @@
 [submodule "External/AngryWasp.Serializer"]
 	path = External/AngryWasp.Serializer
 	url = https://bitbucket.org/angrywasp/angrywasp.serializer
+[submodule "External/Amity.Rpc.CSharp"]
+	path = External/Amity.Rpc.CSharp
+	url = https://github.com/CalexCore/amity.rpc.csharp
