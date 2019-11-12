@@ -14,23 +14,18 @@ namespace Fusion
 {
     public class FusionBotConfig : IBotConfig
     {
+		//todo: set correct bot id when created. delete this todo
 		public ulong BotId => 466512207396732939;
 
         public List<ulong> BotChannelIds => new List<ulong>
 		{
-			466873635638870016, //Fusion
-			595232529456562198, //CB-General
-			595231506209701908, //CB-ST
-			504717279573835832, //AM-XNV
-			509444814404714501, //AM-Bots
+			509444814404714501, // Amity bots channel
 
 		};
 
 		public List<ulong> DevRoleIds => new List<ulong>
 		{
-			595498219987927050, //NV-BotCommander
-            595495919097741322, //AM-BotCommander
-            595495392632766474, //LB-BotCommander
+			556604722476351490 //Amity admin role
 		};
 
         public string CmdPrefix => "$";

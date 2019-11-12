@@ -22,6 +22,8 @@ namespace Atom
         
         public string CmdPrefix => "!";
 
+        //todo: set seed node addresses and potentially change paths
+        //bot expects <seed_node_url>/api/...
         public static readonly string[] SeedNodes = new string[]
         {
             "https://xnv1.getnerva.org",
