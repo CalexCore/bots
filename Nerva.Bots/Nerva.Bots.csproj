@@ -23,6 +23,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../External/AngryWasp.Serializer/Src/AngryWasp.Serializer/AngryWasp.Serializer.csproj" />
-    <ProjectReference Include="../External/Nerva.Rpc.CSharp/Src/Nerva.Rpc/Nerva.Rpc.csproj" />
+    <ProjectReference Include="../External/Amity.Rpc.CSharp/Src/Nerva.Rpc/Nerva.Rpc.csproj" />
   </ItemGroup>
 </Project>

@@ -8,6 +8,6 @@
     <PackageReference Include="Portable.BouncyCastle" Version="*"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../../External/Nerva.Rpc.CSharp/Src/Nerva.Rpc/Nerva.Rpc.csproj" />
+    <ProjectReference Include="../../External/Amity.Rpc.CSharp/Src/Nerva.Rpc/Nerva.Rpc.csproj" />
   </ItemGroup>
 </Project>
