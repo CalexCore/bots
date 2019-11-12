@@ -14,13 +14,12 @@ namespace Fusion
 {
     public class FusionBotConfig : IBotConfig
     {
-		//todo: set correct bot id when created. delete this todo
-		public ulong BotId => 466512207396732939;
+		//billionaire bot id
+		public ulong BotId => 556340672651853825;
 
         public List<ulong> BotChannelIds => new List<ulong>
 		{
 			509444814404714501, // Amity bots channel
-
 		};
 
 		public List<ulong> DevRoleIds => new List<ulong>
@@ -28,7 +27,7 @@ namespace Fusion
 			556604722476351490 //Amity admin role
 		};
 
-        public string CmdPrefix => "$";
+        public string CmdPrefix => ".";
 
 		public string WalletHost { get; } = "http://127.0.0.1";
 
