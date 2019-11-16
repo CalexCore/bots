@@ -20,7 +20,7 @@ namespace Atom
 			556604722476351490 //Amity admin role
 		};
         
-        public string CmdPrefix => "!";
+        public string CmdPrefix => ".";
 
         //todo: set seed node addresses and potentially change paths
         //bot expects <seed_node_url>/api/...
