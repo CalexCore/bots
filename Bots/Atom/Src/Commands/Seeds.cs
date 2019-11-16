@@ -52,7 +52,7 @@ namespace Atom.Commands
                 st = $"Version: {s.Version}\n" +
                     $"Height: {s.Height}/{s.TargetHeight}\n" +
                     $"Connections: {s.IncomingConnections}/{s.OutgoingConnections} in/out\n" +
-                    $"Network Hashrate: {((s.Difficulty / 60.0f) / 1000.0f)} kH/s\n" +
+                    $"Network Hashrate: {((s.Difficulty / 120.0f) / 1000.0f)} kH/s\n" +
                     $"Top Block: {s.TopBlockHash}";
             }
             else
