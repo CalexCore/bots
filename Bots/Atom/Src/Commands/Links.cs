@@ -32,7 +32,7 @@ namespace Atom.Commands
                 sb.AppendLine($"MacOS: [CLI]({json.BinaryUrl}{json.MacLink})");
                 sb.AppendLine($"ARMHF: [CLI]({json.BinaryUrl}{json.ArmhfLink})");
                 sb.AppendLine($"AARCH64: [CLI]({json.BinaryUrl}{json.Aarch64Link})");
-                sb.AppendLine($"RISKV64: [CLI]({json.BinaryUrl}{json.Riscv64Link})");
+                sb.AppendLine($"RISCV64: [CLI]({json.BinaryUrl}{json.Riscv64Link})");
 
                 em.AddField($"Amity Tools", sb.ToString());
 
