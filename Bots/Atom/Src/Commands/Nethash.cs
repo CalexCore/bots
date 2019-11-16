@@ -15,7 +15,7 @@ namespace Atom.Commands
             RequestData rd = await Request.Api(AtomBotConfig.SeedNodes, "daemon/get_info", msg.Channel);
             if (!rd.IsError)
             {
-                float hr = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(rd.ResultString).Result.Difficulty / 60.0f;
+                float hr = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(rd.ResultString).Result.Difficulty / 120.0f;
                 string formatted = $"{hr} h/s";
 
                 float kh = (float)Math.Round(hr / 1000.0f, 2);
