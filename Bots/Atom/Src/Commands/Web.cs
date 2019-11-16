@@ -14,18 +14,15 @@ namespace Atom.Commands
         {
             var em = new EmbedBuilder()
             .WithAuthor("Web Links", Globals.Client.CurrentUser.GetAvatarUrl())
-            .WithDescription("Need more NERVA information?")
+            .WithDescription("Need more Amity information?")
             .WithColor(Color.DarkGrey)
             .WithThumbnailUrl(Globals.Client.CurrentUser.GetAvatarUrl());
 
-            em.AddField("Website", "[getnerva.org](https://getnerva.org/)", true);
-            em.AddField("Twitter", "[@NervaCurrency](https://twitter.com/NervaCurrency)", true);
-            em.AddField("Reddit", "[r/Nerva](https://www.reddit.com/r/Nerva)", true);
-            em.AddField("Source Code", "[BitBucket](https://bitbucket.org/nerva-project)", true);
-            em.AddField("NERVA Stats", "[FreeBoard](https://freeboard.io/board/EV5-se)", true);
-            em.AddField("Block Explorer", "[explorer.getnerva.org](https://explorer.getnerva.org/)", true);
-            em.AddField("CPU Benchmarks", "[Forkmaps.com](https://forkmaps.com/#/benchmarks)", true);
-            em.AddField("Public Node hosted by Hooftly", "[pubnodes.com](https://www.pubnodes.com/) | [Explorer](https://xnvex.pubnodes.com)");
+            em.AddField("Website", "[getamitycoin.org](https://getamitycoin.org/)", true);
+            em.AddField("Twitter", "[@AmityCore](https://twitter.com/AmityCore)", true);
+            em.AddField("Reddit", "[r/AmityCoin](https://www.reddit.com/r/AmityCoin)", true);
+            em.AddField("Source Code", "[Gitlab](https://gitlab.org/amity-project)", true);
+            em.AddField("Block Explorer", "[explorer.getamitycoin.org](https://explorer.getamitycoin.org/)", true);
 
             await DiscordResponse.Reply(msg, embed: em.Build());
         }
