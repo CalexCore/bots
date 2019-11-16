@@ -75,9 +75,6 @@ namespace Atom
         [JsonProperty("cli_version")]
         public string CliVersion { get; set; }
 
-        [JsonProperty("gui_version")]
-        public string GuiVersion { get; set; }
-
         [JsonProperty("binary_url")]
         public string BinaryUrl { get; set; }
 
@@ -90,17 +87,17 @@ namespace Atom
         [JsonProperty("mac")]
         public string MacLink { get; set; }
 
-        [JsonProperty("linux_gui")]
-        public string LinuxGuiLink { get; set; }
+        [JsonProperty("armhf")]
+        public string ArmhfLink { get; set; }
 
-        [JsonProperty("mac_gui")]
-        public string MacGuiLink { get; set; }
+        [JsonProperty("aarch64")]
+        public string Aarch64Link { get; set; }
 
-        [JsonProperty("windows_gui")]
-        public string WindowsGuiLink { get; set; }
+        [JsonProperty("risc")]
+        public string Riscv64Link { get; set; }
 
-        [JsonProperty("bootstrap")]
-        public string[] BootstrapFiles { get; set; }
+        [JsonProperty("quicksync")]
+        public string[] Quicksync { get; set; }
     }
 
     [JsonObject]
