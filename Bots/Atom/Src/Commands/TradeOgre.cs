@@ -14,14 +14,14 @@ namespace Atom.Commands
     {
         public async Task Process(SocketUserMessage msg)
         {
-            RequestData rd = await Request.Http("https://tradeogre.com/api/v1/ticker/btc-xnv");
+            RequestData rd = await Request.Http("https://cratex.io/api/v1/get_markets.php?market=XAM/BTC");
             if (!rd.IsError)
             {
                 var json = JsonConvert.DeserializeObject<MarketInfo>(rd.ResultString);
 
                 var em = new EmbedBuilder()
                 .WithAuthor("TradeOgre Details", Globals.Client.CurrentUser.GetAvatarUrl())
-                .WithDescription("The latest pricing from TradeOgre")
+                .WithDescription("The latest pricing from Cratex")
                 .WithColor(Color.DarkGreen)
                 .WithThumbnailUrl("https://getnerva.org/content/images/tradeogre-logo.png");
 

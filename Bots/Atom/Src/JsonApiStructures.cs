@@ -52,20 +52,20 @@ namespace Atom
     [JsonObject]
     public class MarketInfo
     {
-        [JsonProperty("bid")]
+        [JsonProperty("buy_price")]
         public double Bid { get; set; }
 
-        [JsonProperty("ask")]
+        [JsonProperty("sell_price")]
         public double Ask { get; set; }
 
-        [JsonProperty("volume")]
+        [JsonProperty("volume24h")]
         public double Volume { get; set; }
 
-        [JsonProperty("high")]
-        public double High { get; set; }
+        //[JsonProperty("high")]
+        //public double High { get; set; }
 
-        [JsonProperty("low")]
-        public double Low { get; set; }
+        //[JsonProperty("low")]
+        //public double Low { get; set; }
     }
 
     [JsonObject]
