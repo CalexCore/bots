@@ -9,8 +9,8 @@ using Newtonsoft.Json;
 
 namespace Atom.Commands
 {
-    [Command("tradeogre", "Get market info from TradeOgre")]
-    public class TradeOgre : ICommand
+    [Command("cratex", "Get market info from TradeOgre")]
+    public class Cratex : ICommand
     {
         public async Task Process(SocketUserMessage msg)
         {
@@ -20,10 +20,10 @@ namespace Atom.Commands
                 var json = JsonConvert.DeserializeObject<MarketInfo>(rd.ResultString);
 
                 var em = new EmbedBuilder()
-                .WithAuthor("TradeOgre Details", Globals.Client.CurrentUser.GetAvatarUrl())
+                .WithAuthor("Cratex Details", Globals.Client.CurrentUser.GetAvatarUrl())
                 .WithDescription("The latest pricing from Cratex")
                 .WithColor(Color.DarkGreen)
-                .WithThumbnailUrl("https://getnerva.org/content/images/tradeogre-logo.png");
+                .WithThumbnailUrl("https://getamitycoin.org/assets/cratex-logo.png");
 
                 em.AddField("Volume", Math.Round(json.Volume, 5));
                 em.AddField("Buy", json.Ask * 100000000.0d, true);
