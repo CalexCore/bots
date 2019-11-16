@@ -34,7 +34,7 @@ namespace Atom.Commands
                 sb.AppendLine($"AARCH64: [CLI]({json.BinaryUrl}{json.Aarch64Link})");
                 sb.AppendLine($"RISKV64: [CLI]({json.BinaryUrl}{json.Riscv64Link})");
 
-                em.AddField($"Nerva Tools", sb.ToString());
+                em.AddField($"Amity Tools", sb.ToString());
 
                 sb = new StringBuilder();
                 sb.AppendLine($"[QuickSync]({json.BinaryUrl}quicksync.raw)");
