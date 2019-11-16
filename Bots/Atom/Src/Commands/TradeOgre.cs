@@ -27,7 +27,7 @@ namespace Atom.Commands
 
                 em.AddField("Volume", Math.Round(json.Volume, 5));
                 em.AddField("Buy (Satoshis)", json.Ask * 100000000.0d, true);
-                em.AddField("Sell (satoshis)", json.Bid * 100000000.0d, true);
+                em.AddField("Sell (Satoshis)", json.Bid * 100000000.0d, true);
                 //em.AddField("High", json.High * 100000000.0d, true);
                 //em.AddField("Low", json.Low * 100000000.0d, true);
 
