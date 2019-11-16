@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace Atom.Commands
 {
-    [Command("cratex", "Get market info from TradeOgre")]
+    [Command("cratex", "Get market info from Cratex.io")]
     public class Cratex : ICommand
     {
         public async Task Process(SocketUserMessage msg)
@@ -26,8 +26,8 @@ namespace Atom.Commands
                 .WithThumbnailUrl("https://getamitycoin.org/assets/cratex-logo.png");
 
                 em.AddField("Volume", Math.Round(json.Volume, 5));
-                em.AddField("Buy", json.Ask * 100000000.0d, true);
-                em.AddField("Sell", json.Bid * 100000000.0d, true);
+                em.AddField("Buy (Satoshis)", json.Ask * 100000000.0d, true);
+                em.AddField("Sell (satoshis)", json.Bid * 100000000.0d, true);
                 //em.AddField("High", json.High * 100000000.0d, true);
                 //em.AddField("Low", json.Low * 100000000.0d, true);
 
