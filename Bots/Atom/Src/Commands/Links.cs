@@ -27,14 +27,17 @@ namespace Atom.Commands
 
                 StringBuilder sb = new StringBuilder();
 
-                sb.AppendLine($"Windows: [CLI]({json.BinaryUrl}assets/{json.WindowsLink}) | [CLI]({json.BinaryUrl}assets/{json.ArmhfLink})");
-                sb.AppendLine($"Linux: [CLI]({json.BinaryUrl}assets/{json.LinuxLink}) | [CLI]({json.BinaryUrl}assets/{json.Aarch64Link})");
-                sb.AppendLine($"MacOS: [CLI]({json.BinaryUrl}assets/{json.MacLink}) | [CLI]({json.BinaryUrl}assets/{json.Riscv64Link})");
+                sb.AppendLine($"Windows: [CLI]({json.BinaryUrl}{json.WindowsLink})");
+                sb.AppendLine($"Linux: [CLI]({json.BinaryUrl}{json.LinuxLink})");
+                sb.AppendLine($"MacOS: [CLI]({json.BinaryUrl}{json.MacLink})");
+                sb.AppendLine($"ARMHF: [CLI]({json.BinaryUrl}{json.ArmhfLink})");
+                sb.AppendLine($"AARCH64: [CLI]({json.BinaryUrl}{json.Aarch64Link})");
+                sb.AppendLine($"RISKV64: [CLI]({json.BinaryUrl}{json.Riscv64Link})");
 
                 em.AddField($"Nerva Tools", sb.ToString());
 
                 sb = new StringBuilder();
-                sb.AppendLine($"[QuickSync]({json.BinaryUrl}assets/quicksync.raw)");
+                sb.AppendLine($"[QuickSync]({json.BinaryUrl}quicksync.raw)");
 
                 em.AddField($"Chain Data", sb.ToString());
 
