@@ -26,8 +26,8 @@ namespace Atom
         //bot expects <seed_node_url>/api/...
         public static readonly string[] SeedNodes = new string[]
         {
-            "https://xnv1.getnerva.org",
-            "https://xnv2.getnerva.org"
+            "http://s3.xam.xyz",
+            "http://s4.xam.xyz"
         };
     }
 
