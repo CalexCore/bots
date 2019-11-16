@@ -28,8 +28,8 @@ namespace Atom.Commands
                 em.AddField("Volume", Math.Round(json.Volume, 5));
                 em.AddField("Buy", json.Ask * 100000000.0d, true);
                 em.AddField("Sell", json.Bid * 100000000.0d, true);
-                em.AddField("High", json.High * 100000000.0d, true);
-                em.AddField("Low", json.Low * 100000000.0d, true);
+                //em.AddField("High", json.High * 100000000.0d, true);
+                //em.AddField("Low", json.Low * 100000000.0d, true);
 
                 await DiscordResponse.Reply(msg, embed: em.Build());
             }
