@@ -27,7 +27,7 @@ namespace Fusion
 			556604722476351490 //Amity admin role
 		};
 
-        public string CmdPrefix => ".";
+        public string CmdPrefix => "%";
 
 		public string WalletHost { get; } = "http://127.0.0.1";
 
