@@ -14,7 +14,7 @@ namespace Atom.Commands
     {
         public async Task Process(SocketUserMessage msg)
         {
-            RequestData rd = await Request.Http("https://getamitycoin.org/getbinaries.php");
+            RequestData rd = await Request.Http("https://cdn.getamitycoin.org/getbinaries.php");
             if (!rd.IsError)
             {
                 var json = JsonConvert.DeserializeObject<LinkData>(rd.ResultString);
