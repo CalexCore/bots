@@ -37,7 +37,7 @@ namespace Atom.Commands
                 em.AddField($"Amity Tools", sb.ToString());
 
                 sb = new StringBuilder();
-                sb.AppendLine($"[QuickSync]({json.BinaryUrl}quicksync.raw)");
+                sb.AppendLine($"[Bootstrap]({json.BinaryUrl}mainnet.raw) | [QuickSync]({json.BinaryUrl}quicksync.raw)");
 
                 em.AddField($"Chain Data", sb.ToString());
 
