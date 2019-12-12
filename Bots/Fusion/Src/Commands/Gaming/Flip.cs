@@ -30,7 +30,7 @@ namespace Fusion.Commands.Gaming
 
                 ulong totalAmount = betAmount.ToAtomicUnits() + (0.1d).ToAtomicUnits();
 
-                //both parties must have the amount + 0.1xnv to cover potential fees
+                //both parties must have the amount + 0.1xam to cover potential fees
 
                 uint playerAccountIndex = cfg.UserWalletCache[msg.Author.Id].Item1;
                 string playerAddress = cfg.UserWalletCache[msg.Author.Id].Item2;

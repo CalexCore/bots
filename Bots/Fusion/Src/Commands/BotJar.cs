@@ -23,14 +23,14 @@ namespace Fusion.Commands
             (GetBalanceResponseData result) =>
             {
                 EmbedBuilder eb = new EmbedBuilder()
-                .WithAuthor($"Fusion's Tip Jar", Globals.Client.CurrentUser.GetAvatarUrl())
+                .WithAuthor($"Billys's Tip Jar", Globals.Client.CurrentUser.GetAvatarUrl())
                 .WithDescription("Whale or fail?")
                 .WithColor(Color.DarkTeal)
                 .WithThumbnailUrl(Globals.Client.CurrentUser.GetAvatarUrl());
 
                 eb.AddField("Address", cfg.UserWalletCache[cfg.BotId].Item2);
-                eb.AddField("Unlocked", $"{result.UnlockedBalance.FromAtomicUnits()} xnv");
-                eb.AddField("Total", $"{result.Balance.FromAtomicUnits()} xnv");
+                eb.AddField("Unlocked", $"{result.UnlockedBalance.FromAtomicUnits()} xam");
+                eb.AddField("Total", $"{result.Balance.FromAtomicUnits()} xam");
 
                 Sender.PublicReply(msg, null, eb.Build()).Wait();
             },

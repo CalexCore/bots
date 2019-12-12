@@ -33,8 +33,8 @@ namespace Fusion.Commands
                     .WithThumbnailUrl(Globals.Client.CurrentUser.GetAvatarUrl());
 
                     eb.AddField("Address", cfg.UserWalletCache[msg.Author.Id].Item2);
-                    eb.AddField($"Unlocked", $"{result.UnlockedBalance.FromAtomicUnits()} xnv");
-                    eb.AddField($"Total", $"{result.Balance.FromAtomicUnits()} xnv");
+                    eb.AddField($"Unlocked", $"{result.UnlockedBalance.FromAtomicUnits()} xam");
+                    eb.AddField($"Total", $"{result.Balance.FromAtomicUnits()} xam");
 
                     Sender.PrivateReply(msg, null, eb.Build()).Wait();
                 },

@@ -17,9 +17,9 @@ namespace Fusion.Commands.Gaming
             .WithColor(Color.DarkOrange)
             .WithThumbnailUrl(Globals.Client.CurrentUser.GetAvatarUrl());
 
-            eb.AddField("Cost", $"{LotteryManager.CurrentGame.Parameters.TicketCost.ToString("0.0###")}xnv");
-            eb.AddField("Prize", $"{LotteryManager.CurrentGame.Parameters.WinnerCount}x {LotteryManager.CurrentGame.Parameters.MinorPrize.ToString("0.0###")}xnv");
-            eb.AddField("Jackpot", $"{LotteryManager.CurrentGame.JackpotAmount.ToString("0.0###")}xnv");
+            eb.AddField("Cost", $"{LotteryManager.CurrentGame.Parameters.TicketCost.ToString("0.0###")}xam");
+            eb.AddField("Prize", $"{LotteryManager.CurrentGame.Parameters.WinnerCount}x {LotteryManager.CurrentGame.Parameters.MinorPrize.ToString("0.0###")}xam");
+            eb.AddField("Jackpot", $"{LotteryManager.CurrentGame.JackpotAmount.ToString("0.0###")}xam");
             eb.AddField("Tickets Left", $"{LotteryManager.CurrentGame.GetRemainingTickets()} / {LotteryManager.CurrentGame.Parameters.TicketCount}");
 
             await Sender.PublicReply(msg, null, eb.Build());

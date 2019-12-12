@@ -40,7 +40,7 @@ namespace Fusion.Commands
                         if (!string.IsNullOrEmpty(address))
                         {
                             await Sender.PrivateReply(msg, $"{m.Mention} does not have a wallet. They cannot take your tip.");
-                            await Sender.SendPrivateMessage(Globals.Client.GetUser(m.Id), $"{msg.Author.Mention} tried to send you {amount} xnv, but you don't have a wallet");
+                            await Sender.SendPrivateMessage(Globals.Client.GetUser(m.Id), $"{msg.Author.Mention} tried to send you {amount} xam, but you don't have a wallet");
                         }
                         else
                             await SendToUser(msg, m, accountIndex, amount.ToAtomicUnits());
@@ -64,11 +64,11 @@ namespace Fusion.Commands
             },
             (TransferResponseData r) =>
             {
-                Sender.SendPrivateMessage(Globals.Client.GetUser(msg.Author.Id), $"You sent {r.Amount.FromAtomicUnits()} xnv to {recipient.Mention} with a fee of {r.Fee.FromAtomicUnits()} xnv\r\n{r.TxHash}").Wait();
+                Sender.SendPrivateMessage(Globals.Client.GetUser(msg.Author.Id), $"You sent {r.Amount.FromAtomicUnits()} xam to {recipient.Mention} with a fee of {r.Fee.FromAtomicUnits()} xam\r\n{r.TxHash}").Wait();
                 msg.AddReactionAsync(new Emoji("💸"));
 
                 if (recipient.Id != cfg.BotId) //exception thrown if trying to send a DM to fusion, so skip
-                    Sender.SendPrivateMessage(Globals.Client.GetUser(recipient.Id), $"{msg.Author.Mention} sent you {r.Amount.FromAtomicUnits()} xnv").Wait();
+                    Sender.SendPrivateMessage(Globals.Client.GetUser(recipient.Id), $"{msg.Author.Mention} sent you {r.Amount.FromAtomicUnits()} xam").Wait();
             },
             (RequestError e) =>
             {

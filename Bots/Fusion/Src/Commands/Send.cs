@@ -48,7 +48,7 @@ namespace Fusion.Commands
                 },
                 (TransferResponseData r) =>
                 {
-                    Sender.PrivateReply(msg, $"{r.Amount.FromAtomicUnits()} xnv was sent with a fee of {r.Fee.FromAtomicUnits()} xnv\r\n{r.TxHash}").Wait();
+                    Sender.PrivateReply(msg, $"{r.Amount.FromAtomicUnits()} xam was sent with a fee of {r.Fee.FromAtomicUnits()} xam\r\n{r.TxHash}").Wait();
                 },
                 (RequestError e) =>
                 {

@@ -57,9 +57,9 @@ namespace Fusion.Commands.Gaming
             {
                 RequestError err = await AccountHelper.PayUser((double)sender.Parameters.MinorPrize, cfg.BotId, n[w]);
                 if (err != null)
-                    await Sender.SendPrivateMessage(Globals.Client.GetUser(n[w]), $"You just won {sender.Parameters.MinorPrize}xnv in the lottery, but there was a problem with the payout. Please contact an admin and quote number `{tsNow}`");
+                    await Sender.SendPrivateMessage(Globals.Client.GetUser(n[w]), $"You just won {sender.Parameters.MinorPrize}xam in the lottery, but there was a problem with the payout. Please contact an admin and quote number `{tsNow}`");
                 else
-                    await Sender.SendPrivateMessage(Globals.Client.GetUser(n[w]), $"You just won {sender.Parameters.MinorPrize}xnv in the lottery.");
+                    await Sender.SendPrivateMessage(Globals.Client.GetUser(n[w]), $"You just won {sender.Parameters.MinorPrize}xam in the lottery.");
             }
 
             float jackpot = sender.JackpotAmount;
@@ -70,9 +70,9 @@ namespace Fusion.Commands.Gaming
                 {
                     RequestError err = await AccountHelper.PayUser((double)sender.JackpotAmount, cfg.BotId, n[w]);
                     if (err != null)
-                        await Sender.SendPrivateMessage(Globals.Client.GetUser(n[w]), $"You just won the lottery jackpot of {sender.JackpotAmount}xnv, but there was a problem with the payout. Please contact an admin and quote number `{tsNow}`");
+                        await Sender.SendPrivateMessage(Globals.Client.GetUser(n[w]), $"You just won the lottery jackpot of {sender.JackpotAmount}xam, but there was a problem with the payout. Please contact an admin and quote number `{tsNow}`");
                     else
-                        await Sender.SendPrivateMessage(Globals.Client.GetUser(n[w]), $"You just won the lottery jackpot of {sender.JackpotAmount}xnv.");
+                        await Sender.SendPrivateMessage(Globals.Client.GetUser(n[w]), $"You just won the lottery jackpot of {sender.JackpotAmount}xam.");
 
                     jackpot = 0;
                 }
