@@ -70,8 +70,8 @@ namespace Fusion
         public static bool ParseAddressFromMessage(SocketUserMessage msg, out string address)
         {
             address = null;
-            List<string> addresses = new Regex(@"(NV|NS)[a-zA-Z0-9]{95}").Matches(msg.Content).Select(x => x.Value).ToList();
-            addresses.AddRange(new Regex(@"(Ni)[a-zA-Z0-9]{107}").Matches(msg.Content).Select(x => x.Value).ToList());
+            List<string> addresses = new Regex(@"(amit|asub)[a-zA-Z0-9]{98}").Matches(msg.Content).Select(x => x.Value).ToList();
+            addresses.AddRange(new Regex(@"(aint)[a-zA-Z0-9]{109}").Matches(msg.Content).Select(x => x.Value).ToList());
 
             if (addresses.Count == 0)
                 return false;
