@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <RootNamespace>Nerva.Bots</RootNamespace>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
@@ -20,9 +20,9 @@
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="*"/>
     <PackageReference Include="Newtonsoft.Json" Version="*"/>
+    <PackageReference Include="AngryWasp.Serializer" Version="*"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="../External/AngryWasp.Serializer/Src/AngryWasp.Serializer/AngryWasp.Serializer.csproj" />
-    <ProjectReference Include="../External/Amity.Rpc.CSharp/Src/Nerva.Rpc/Nerva.Rpc.csproj" />
+    <ProjectReference Include="../External/Amity.Rpc.CSharp/Src/Nerva.Rpc/Nerva.Rpc.csproj"/>
   </ItemGroup>
 </Project>

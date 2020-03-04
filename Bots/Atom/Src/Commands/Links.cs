@@ -1,5 +1,4 @@
 using System.Text;
-using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Nerva.Bots;
@@ -12,37 +11,39 @@ namespace Atom.Commands
     [Command("links", "Get official Amity download links")]
     public class Links : ICommand
     {
-        public async Task Process(SocketUserMessage msg)
+        public void Process(SocketUserMessage msg)
         {
-            RequestData rd = await Request.Http("https://cdn.getamitycoin.org/getbinaries.php");
-            if (!rd.IsError)
+            Request.Http("https://cdn.getamitycoin.org/getbinaries.php", (rd) =>
             {
-                var json = JsonConvert.DeserializeObject<LinkData>(rd.ResultString);
+				if (!rd.IsError)
+				{
+					var json = JsonConvert.DeserializeObject<LinkData>(rd.ResultString);
 
-                var em = new EmbedBuilder()
-                .WithAuthor("Download Links", Globals.Client.CurrentUser.GetAvatarUrl())
-                .WithDescription($"Current CLI: {json.CliVersion}")
-                .WithColor(Color.DarkPurple)
-                .WithThumbnailUrl("https://getamitycoin.org/assets/amity-logo.png");
+					var em = new EmbedBuilder()
+					.WithAuthor("Download Links", Globals.Client.CurrentUser.GetAvatarUrl())
+					.WithDescription($"Current CLI: {json.CliVersion}")
+					.WithColor(Color.DarkPurple)
+					.WithThumbnailUrl("https://getamitycoin.org/assets/amity-logo.png");
 
-                StringBuilder sb = new StringBuilder();
+					StringBuilder sb = new StringBuilder();
 
-                sb.AppendLine($"Windows: [CLI]({json.BinaryUrl}{json.WindowsLink})");
-                sb.AppendLine($"Linux: [CLI]({json.BinaryUrl}{json.LinuxLink})");
-                sb.AppendLine($"MacOS: [CLI]({json.BinaryUrl}{json.MacLink})");
-                sb.AppendLine($"ARMHF: [CLI]({json.BinaryUrl}{json.ArmhfLink})");
-                sb.AppendLine($"AARCH64: [CLI]({json.BinaryUrl}{json.Aarch64Link})");
-                sb.AppendLine($"RISCV64: [CLI]({json.BinaryUrl}{json.Riscv64Link})");
+					sb.AppendLine($"Windows: [CLI]({json.BinaryUrl}{json.WindowsLink})");
+					sb.AppendLine($"Linux: [CLI]({json.BinaryUrl}{json.LinuxLink})");
+					sb.AppendLine($"MacOS: [CLI]({json.BinaryUrl}{json.MacLink})");
+					sb.AppendLine($"ARMHF: [CLI]({json.BinaryUrl}{json.ArmhfLink})");
+					sb.AppendLine($"AARCH64: [CLI]({json.BinaryUrl}{json.Aarch64Link})");
+					sb.AppendLine($"RISCV64: [CLI]({json.BinaryUrl}{json.Riscv64Link})");
 
-                em.AddField($"Amity Tools", sb.ToString());
+					em.AddField($"Amity Tools", sb.ToString());
 
-                sb = new StringBuilder();
-                sb.AppendLine($"[Bootstrap]({json.BinaryUrl}mainnet.raw) | [QuickSync]({json.BinaryUrl}quicksync.raw)");
+					sb = new StringBuilder();
+					sb.AppendLine($"[Bootstrap]({json.BinaryUrl}mainnet.raw) | [QuickSync]({json.BinaryUrl}quicksync.raw)");
 
-                em.AddField($"Chain Data", sb.ToString());
+					em.AddField($"Chain Data", sb.ToString());
 
-                await DiscordResponse.Reply(msg, embed: em.Build());
-            }
+					DiscordResponse.Reply(msg, embed: em.Build());
+				}
+            });
         }
     }
 }

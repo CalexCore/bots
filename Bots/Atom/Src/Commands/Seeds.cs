@@ -11,54 +11,37 @@ namespace Atom.Commands
     [Command("seeds", "Get seed node info")]
     public class Seeds : ICommand
     {
-        public async Task Process(SocketUserMessage msg)
+        public void Process(SocketUserMessage msg)
         {
             var em = new EmbedBuilder()
-            .WithAuthor("Seed Node Information", Globals.Client.CurrentUser.GetAvatarUrl())
-            .WithDescription("The latest seed node status")
-            .WithColor(Color.DarkMagenta)
+            .WithAuthor("Amity Network Stats", Globals.Client.CurrentUser.GetAvatarUrl())
+            .WithDescription("Seed node status")
+            .WithColor(Color.DarkRed)
             .WithThumbnailUrl(Globals.Client.CurrentUser.GetAvatarUrl());
 
-            int x = 0;
-            foreach (var s in AtomBotConfig.SeedNodes)
+            Request.ApiAll(AtomBotConfig.GetSeedNodes(), "daemon/get_info", msg.Channel, (rd) =>
             {
-                ++x;
 
-                try
+                foreach (var r in rd)
                 {
-                    NodeInfo ni = null;
-                    RequestData rd = await Request.Http($"{s}/api/daemon/get_info/");
-                    if (!rd.IsError)
-                        ni = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(rd.ResultString).Result;
+                    string result = "No response...";
 
-                    em.AddField($"Seed {x}", GetSeedInfoString(ni), true);
+                    if (r.Value != null)
+                    {
+                        NodeInfo ni = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(r.Value.ResultString).Result;
+                        result = 
+                            $"Version: {ni.Version}\n" +
+                            $"Height: {ni.Height}/{ni.TargetHeight}\n" +
+                            $"Connections: {ni.IncomingConnections}/{ni.OutgoingConnections} in/out\n" +
+                            $"Network Hashrate: {((ni.Difficulty / 60.0f) / 1000.0f)} kH/s\n" +
+                            $"Top Block: {ni.TopBlockHash}";
+                    }
+
+                    em.AddField(r.Key, result);
                 }
-                catch
-                {
-                    em.AddField($"Seed {x}", "Not Available", true);
-                    continue;
-                }
-                
-            }
 
-            await DiscordResponse.Reply(msg, embed: em.Build());
-        }
-
-        private string GetSeedInfoString(NodeInfo s)
-        {
-            string st;
-            if (s != null)
-            {
-                st = $"Version: {s.Version}\n" +
-                    $"Height: {s.Height}/{s.TargetHeight}\n" +
-                    $"Connections: {s.IncomingConnections}/{s.OutgoingConnections} in/out\n" +
-                    $"Network Hashrate: {((s.Difficulty / 120.0f) / 1000.0f)} kH/s\n" +
-                    $"Top Block: {s.TopBlockHash}";
-            }
-            else
-                st = "Unreachable";
-
-            return st;
+                DiscordResponse.Reply(msg, embed: em.Build());
+            });
         }
     }
 }

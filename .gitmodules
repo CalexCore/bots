@@ -1,0 +1,3 @@
+[submodule "External/Amity.Rpc.CSharp"]
+	path = External/Amity.Rpc.CSharp
+	url = https://github.com/CalexCore/amity.rpc.csharp

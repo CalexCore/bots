@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
@@ -17,5 +17,11 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../Nerva.Bots/Nerva.Bots.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="../../LICENSE.txt">
+      <Link>AngryWasp.LICENSE.txt</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

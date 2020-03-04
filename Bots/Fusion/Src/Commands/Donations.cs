@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Nerva.Bots;
@@ -14,20 +13,20 @@ namespace Fusion.Commands
     [Command("donations", "Get information on previous donations")]
     public class Donations : ICommand
     {
-        public async Task Process(SocketUserMessage msg)
+        public void Process(SocketUserMessage msg)
         {
             FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
             GetAccountsResponseData balances = null;
             List<GetTransfersResponseData> transfers = new List<GetTransfersResponseData>();
 
-            await new GetAccounts(null, (GetAccountsResponseData result) =>
+            new GetAccounts(null, (GetAccountsResponseData result) =>
             {
                 balances = result;
-            }, null, cfg.WalletHost, cfg.DonationWalletPort).RunAsync();
+            }, null, cfg.WalletHost, cfg.DonationWalletPort).Run();
 
             if (balances == null)
             {
-                await DiscordResponse.Reply(msg, text: "Sorry. Couldn't retrieve the donation account balances...");
+                DiscordResponse.Reply(msg, text: "Sorry. Couldn't retrieve the donation account balances...");
                 return;
             }
 
@@ -39,18 +38,18 @@ namespace Fusion.Commands
                     continue;
                 }
 
-                await new GetTransfers(new GetTransfersRequestData
+                new GetTransfers(new GetTransfersRequestData
                 {
                     AccountIndex = (uint)a.Index
                 }, (GetTransfersResponseData result) =>
                 {
                     transfers.Add(result);
-                }, null, cfg.WalletHost, cfg.DonationWalletPort).RunAsync();
+                }, null, cfg.WalletHost, cfg.DonationWalletPort).Run();
             }
 
             if (cfg.AccountJson.Accounts.Length != transfers.Count)
             {
-                await DiscordResponse.Reply(msg, text: "Sorry. Couldn't retrieve the donation account balances...");
+                DiscordResponse.Reply(msg, text: "Sorry. Couldn't retrieve the donation account balances...");
                 return;
             }
 
@@ -85,10 +84,10 @@ namespace Fusion.Commands
                 foreach (var o in tt.Outgoing)
                     outTotal += o.Amount;
 
-                eb.AddField($"{a.Name}: {bb.FromAtomicUnits()} XAM ({outTotal.FromAtomicUnits()} out)", sb.ToString());
+                eb.AddField($"{a.Name}: {bb.FromAtomicUnits()} xam ({outTotal.FromAtomicUnits()} out)", sb.ToString());
             }
 
-            await DiscordResponse.Reply(msg, embed: eb.Build());
+            DiscordResponse.Reply(msg, embed: eb.Build());
         }
     }
 }

@@ -29,7 +29,7 @@ namespace Fusion
 
         public string CmdPrefix => "%";
 
-		public string WalletHost { get; } = "http://127.0.0.1";
+		public string WalletHost { get; } = "127.0.0.1";
 
         public uint DonationWalletPort { get; set; } = (uint)MathHelper.Random.NextInt(10000, 50000);
 
@@ -40,6 +40,8 @@ namespace Fusion
         public string DonationPaymentIdKey { get; set; } = null;
 
 		public Dictionary<ulong, Tuple<uint, string>> UserWalletCache { get; } = new Dictionary<ulong, Tuple<uint, string>>();
+
+		public string DataDir { get; set; } = Environment.CurrentDirectory;
     }
 
     public class FusionBot : IBot
@@ -62,10 +64,23 @@ namespace Fusion
 			string donationWalletFile = string.Empty, donationWalletPassword = string.Empty;
 			string userWalletFile = string.Empty, userWalletPassword = string.Empty;
 
+			if (cmd["data-dir"] != null)
+                cfg.DataDir = cmd["data-dir"].Value;
+            else
+                cfg.DataDir = Environment.CurrentDirectory;
+
 			if (cmd["key-file"] != null)
 			{
 				string[] keys = File.ReadAllLines(cmd["key-file"].Value);
-				string keyFilePassword = PasswordPrompt.Get("Please enter the key file decryption password");
+				string keyFilePassword;
+
+				if (cmd["key-password"] != null)
+					keyFilePassword = cmd["key-password"].Value;
+				else
+					keyFilePassword = Environment.GetEnvironmentVariable("FUSION_KEY_PASSWORD");
+
+				if (string.IsNullOrEmpty(keyFilePassword))	
+					keyFilePassword = PasswordPrompt.Get("Please enter the key file decryption password");
 
 				donationWalletPassword = keys[0].Decrypt(keyFilePassword);
 				userWalletPassword = keys[1].Decrypt(keyFilePassword);
@@ -86,7 +101,7 @@ namespace Fusion
 			if (cmd["user-wallet-file"] != null)
 				userWalletFile = cmd["user-wallet-file"].Value;
 
-			string jsonFile = Path.Combine(Environment.CurrentDirectory, $"Wallets/{donationWalletFile}.json");
+			string jsonFile = Path.Combine(cfg.DataDir, $"{donationWalletFile}.json");
 			Log.Write($"Loading Wallet JSON: {jsonFile}");
 			cfg.AccountJson = JsonConvert.DeserializeObject<AccountJson>(File.ReadAllText(jsonFile));
 
@@ -153,9 +168,7 @@ namespace Fusion
 			},
 			cfg.WalletHost, cfg.UserWalletPort).Run();
 
-			//todo: Check if an existing game is still running after restart and load that instead
-
-			string fp = Path.Combine(Environment.CurrentDirectory, "lottery.xml");
+			string fp = Path.Combine(cfg.DataDir, "lottery.xml");
 
 			if (File.Exists(fp))
 				LotteryManager.Load(fp);

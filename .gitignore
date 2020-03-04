@@ -1,7 +1,9 @@
-Bin/encrypt-tokens
-Bin/geo-api-key
 Bin/fusion-keys
+Bin/keys
+Bin/geo-api-key
 Bin/magellan-api-keys
+Bin/*.xml
+Data
 
 **/Bin/Debug
 **/Bin/Release

@@ -9,7 +9,7 @@ namespace Fusion.Commands.Gaming
     [Command("lottery", "Get stats about the current lottery game")]
     public class LotteryStats : ICommand
     {
-        public async Task Process(SocketUserMessage msg)
+        public void Process(SocketUserMessage msg)
         {
             EmbedBuilder eb = new EmbedBuilder()
             .WithAuthor($"Lottery Stats", Globals.Client.CurrentUser.GetAvatarUrl())
@@ -22,7 +22,7 @@ namespace Fusion.Commands.Gaming
             eb.AddField("Jackpot", $"{LotteryManager.CurrentGame.JackpotAmount.ToString("0.0###")}xam");
             eb.AddField("Tickets Left", $"{LotteryManager.CurrentGame.GetRemainingTickets()} / {LotteryManager.CurrentGame.Parameters.TicketCount}");
 
-            await Sender.PublicReply(msg, null, eb.Build());
+            Sender.PublicReply(msg, null, eb.Build());
         }
     }
 }

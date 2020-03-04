@@ -5,12 +5,14 @@
             "name": "Atom",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceRoot}/Bin/Debug/Nerva.Bots.dll",
+            "program": "${workspaceRoot}/Bin/Debug/Nerva.Bots",
             "cwd": "${workspaceRoot}/Bin",
-            "console": "externalTerminal",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
             "preLaunchTask": "build-debug",
+            "envFile": "${workspaceFolder}/Data/env",
             "args":[
-                "--dev-mode", "--bot", "${workspaceRoot}/Bin/Debug/Atom.dll",
+                "--bot", "${workspaceRoot}/Bin/Debug/Atom.dll",
                 "--token", "zUe8edTJjCydC+Zy5IJclKPNlVmTWT46deJBLmzu09xZ5/D6Gclh32nig0jJ1RWm1viJkxoCm3/6Fhle1xakrk9sfP4vLiiE+D+yt2ZMClkB62N3QFrebUTVLOmlWHc6",
             ]
         },
@@ -18,66 +20,48 @@
             "name": "Fusion",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceRoot}/Bin/Debug/Nerva.Bots.dll",
+            "program": "${workspaceRoot}/Bin/Debug/Nerva.Bots",
             "cwd": "${workspaceRoot}/Bin",
-            "console": "externalTerminal",
-            "preLaunchTask": "build-debug",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "preLaunchTask": "build-and-debug",
+            "envFile": "${workspaceFolder}/Data/env",
             "args":[
-                "--dev-mode", "--bot", "${workspaceRoot}/Bin/Debug/Fusion.dll",
+                "--bot", "${workspaceRoot}/Bin/Debug/Fusion.dll",
                 "--token", "FXXCAEFbv+Hz65LXBk30SoKbR5ZQcQyRHtWgmcBg7/TuQbrVbKoRfLuRk1XIYafYCpSZTgZvvtXqjqlU/SAo34Jq/vVz/085q8n1z7YhgD/l0iKZwNp0q67X+S8ymOWv",
-                "--key-file", "${workspaceRoot}/Bin/fusion-keys",
+                "--key-file", "${workspaceRoot}/Bin/fusion-keys", "--debug", "--debug-hide", "13",
                 "--donation-wallet-file", "fusion-donation-wallet", "--donation-wallet-port", "12656",
-                "--user-wallet-file", "fusion-user-wallet-testnet", "--user-wallet-port", "12657"
+                "--user-wallet-file", "fusion-user-wallet-testnet", "--user-wallet-port", "12657",
+                "--data-dir", "${workspaceRoot}/Data", 
             ]
         },
         {
-            "name": "MagellanServer",
+            "name": "Fusion Wallet Backup",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceRoot}/Bin/Debug/Magellan.Server.dll",
+            "program": "${workspaceRoot}/Bin/Debug/FusionWalletBackup",
             "cwd": "${workspaceRoot}/Bin",
-            "console": "externalTerminal",
-            "preLaunchTask": "build-debug",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "preLaunchTask": "build-and-debug",
+            "envFile": "${workspaceFolder}/Data/env",
             "args":[
-                "--geo-api-key-file", "${workspaceRoot}/Bin/geo-api-key",
-                "--access-keys", "${workspaceRoot}/Bin/magellan-api-keys"
+                "--port", "13333", "--backup", "--file", "${workspaceFolder}/Data/fusion/wallet.backup"
             ]
         },
         {
-            "name": "NodeScraper",
+            "name": "Fusion Wallet Restore",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceRoot}/Bin/Debug/PeerListScraper.dll",
+            "program": "${workspaceRoot}/Bin/Debug/FusionWalletBackup",
             "cwd": "${workspaceRoot}/Bin",
-            "console": "externalTerminal",
-            "preLaunchTask": "build-debug",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "preLaunchTask": "build-and-debug",
+            "envFile": "${workspaceFolder}/Data/env",
             "args":[
-                //"--url", "http://127.0.0.1:8080/api/getpeerlist.php",
-                //"--url", "https://nerva.syzygy.cc/api/getpeerlist.php",
-                //"--url", "http://xnv1.getnerva.org/api/getpeerlist.php",
-                //"--url", "http://xnv2.getnerva.org/api/getpeerlist.php",
-                "--geo-api-key-file", "${workspaceRoot}/Bin/geo-api-key",
+                "--port", "13333", "--restore", "--file", "${workspaceFolder}/Data/fusion/wallet.backup"
             ]
-        },
-        {
-            "name": "IpListGen",
-            "type": "coreclr",
-            "request": "launch",
-            "program": "${workspaceRoot}/Bin/Debug/CloudMiningListGen.dll",
-            "cwd": "${workspaceRoot}/Bin",
-            "console": "externalTerminal",
-            "preLaunchTask": "build-debug",
-            "args":["--ip-list", "${workspaceRoot}/Bin/iplist.txt"]
-        },
-        {
-            "name": "RandomKeyGen",
-            "type": "coreclr",
-            "request": "launch",
-            "program": "${workspaceRoot}/Bin/Debug/StringEncrypter.dll",
-            "cwd": "${workspaceRoot}/Bin",
-            "console": "externalTerminal",
-            "preLaunchTask": "build-debug",
-            "args":["--random"]
         }
     ]
 }

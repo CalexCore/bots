@@ -4,4 +4,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Atom</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="DnsClient" Version="*"/>
+  </ItemGroup>
 </Project>

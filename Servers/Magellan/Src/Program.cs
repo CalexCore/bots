@@ -26,10 +26,19 @@ namespace MagellanServer
 
             NodeMapDataStore ds = new NodeMapDataStore();
 
-            if (File.Exists("NodeMap.xml"))
+            string dataDir = null;
+
+            if (cmd["data-dir"] != null)
+                dataDir = cmd["data-dir"].Value;
+            else
+                dataDir = Environment.CurrentDirectory;
+
+            Log.Instance.Write($"Using data directory {dataDir}");
+
+            if (File.Exists(Path.Combine(dataDir, "NodeMap.xml")))
             {
                 Log.Instance.Write("Loading node map info");
-                ds = new ObjectSerializer().Deserialize<NodeMapDataStore>(XDocument.Load("NodeMap.xml"));
+                ds = new ObjectSerializer().Deserialize<NodeMapDataStore>(XDocument.Load(Path.Combine(dataDir, "NodeMap.xml")));
                 Log.Instance.Write($"Node map loaded {ds.NodeMap.Count} items from file");
 
                 if (!File.Exists("/var/www/html/nodemap.json"))
@@ -92,7 +101,7 @@ namespace MagellanServer
                 {
                     Task.Run( () =>
                     {
-                        new ObjectSerializer().Serialize(r.DataStore, "NodeMap.xml");
+                        new ObjectSerializer().Serialize(r.DataStore, Path.Combine(dataDir, "NodeMap.xml"));
                         Log.Instance.Write("Node map data saved");
 
                         Log.Instance.Write("Saving node map data to json");

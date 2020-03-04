@@ -1,7 +1,5 @@
 using System.Text;
-using System.Net.Sockets;
 using System.Net;
-using System.Threading;
 using AngryWasp.Logger;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -118,18 +116,6 @@ namespace MagellanServer
                         string result = ok ? RESULT_OK : RESULT_BAD;
                         response.OutputStream.Write(Encoding.ASCII.GetBytes(result));
                         context.Response.Close();
-                    }
-                    break;
-                case "save":
-                    {
-                        Task.Run( () =>
-                        {
-                            new ObjectSerializer().Serialize(dataStore, "NodeMap.xml");
-                            Log.Instance.Write("Node map data saved");
-
-                            Log.Instance.Write("Saving node map data to json");
-                            File.WriteAllText("/var/www/html/nodemap.json", $"{{\"status\":\"OK\",\"result\":{dataStore.FetchAll()}}}\r\n");
-                        });
                     }
                     break;
                 default:

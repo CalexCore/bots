@@ -6,43 +6,42 @@ using Nerva.Rpc;
 using Nerva.Rpc.Wallet;
 using System.Linq;
 using System;
-using System.Threading.Tasks;
 using Nerva.Bots.Helpers;
 
 namespace Fusion
 {
     public static class AccountHelper
     {
-        public static async Task<bool> CreateNewAccount(SocketUserMessage msg)
+        public static bool CreateNewAccount(SocketUserMessage msg)
         {
             FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
             ulong id = msg.Author.Id;
             bool ret = false;
             
             //todo: should probably attempt to fetch a wallet with a tag matching the user id before making one
-            await Sender.PrivateReply(msg, "You don't have an account. Hold while I create one for you.");
+            Sender.PrivateReply(msg, "You don't have an account. Hold while I create one for you.");
 
             //create an account
-            await new CreateAccount(new CreateAccountRequestData
+            new CreateAccount(new CreateAccountRequestData
             {
                 Label = id.ToString()
             },
             (CreateAccountResponseData r) =>
             {
-                Sender.PrivateReply(msg, $"You now have a new account. You can make a deposit to\r\n`{r.Address}`").Wait();
+                Sender.PrivateReply(msg, $"You now have a new account. You can make a deposit to\r\n`{r.Address}`");
                 cfg.UserWalletCache.Add(id, new Tuple<uint, string>(r.Index, r.Address));
                 ret = true;
             },
             (RequestError e) =>
             {
-                Sender.PrivateReply(msg, "Oof. No good. You are going to have to try again later.").Wait();
+                Sender.PrivateReply(msg, "Oof. No good. You are going to have to try again later.");
             },
-            cfg.WalletHost, cfg.UserWalletPort).RunAsync();
+            cfg.WalletHost, cfg.UserWalletPort).Run();
 
             return ret;
         }
 
-        public static async Task<string> CreateNewAccount(SocketUser user)
+        public static string CreateNewAccount(SocketUser user)
         {
             FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
             string addr = string.Empty;
@@ -52,17 +51,17 @@ namespace Fusion
 
             cfg.UserWalletCache.Add(user.Id, null);
 
-            await new CreateAccount(new CreateAccountRequestData
+            new CreateAccount(new CreateAccountRequestData
             {
                 Label = user.Id.ToString()
             },
             (CreateAccountResponseData r) =>
             {
-                Sender.SendPrivateMessage(user, $"You now have a new account. You can make a deposit to\r\n`{r.Address}`").Wait();
+                Sender.SendPrivateMessage(user, $"You now have a new account. You can make a deposit to\r\n`{r.Address}`");
                 cfg.UserWalletCache[user.Id] = new Tuple<uint, string>(r.Index, r.Address);
                 addr = r.Address;
             },
-            null, cfg.WalletHost, cfg.UserWalletPort).RunAsync();
+            null, cfg.WalletHost, cfg.UserWalletPort).Run();
 
             return addr;
         }
@@ -109,13 +108,13 @@ namespace Fusion
             return amount != int.MaxValue;;
         }
 
-        public static async Task<RequestError> PayUser(double amount, ulong sender, ulong recipient)
+        public static RequestError PayUser(double amount, ulong sender, ulong recipient)
         {
             FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
 
             RequestError error = null;
 
-            await new Transfer(new TransferRequestData
+            new Transfer(new TransferRequestData
             {
                 AccountIndex = cfg.UserWalletCache[sender].Item1,
                 Destinations = new List<TransferDestination> {
@@ -127,7 +126,7 @@ namespace Fusion
             {
                 error = e;
             },
-            cfg.WalletHost, cfg.UserWalletPort).RunAsync();
+            cfg.WalletHost, cfg.UserWalletPort).Run();
             
             return error;
         }

@@ -11,7 +11,7 @@ namespace Fusion.Commands
     [Command("rescan", "Rescans the wallet to fix any funkiness. Not for you")]
     public class RescanWallet : ICommand
     {
-        public async Task Process(SocketUserMessage msg)
+        public void Process(SocketUserMessage msg)
         {
             FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
 
@@ -19,25 +19,25 @@ namespace Fusion.Commands
             //todo: remove hard coded user id
             if (msg.Author.Id != 407511685134549003)
             {
-                await Sender.PublicReply(msg, "No rescan for you!");
+                Sender.PublicReply(msg, "No rescan for you!");
                 return;
             }
 
             new RescanBlockchain( (c) =>
             {
-                Sender.PrivateReply(msg, "Rescan of donation wallet complete.").Wait();
+                Sender.PrivateReply(msg, "Rescan of donation wallet complete.");
             }, (e) =>
             {
-                Sender.PrivateReply(msg, "Oof. Couldn't rescan donation wallet.").Wait();
+                Sender.PrivateReply(msg, "Oof. Couldn't rescan donation wallet.");
             }, cfg.WalletHost, cfg.DonationWalletPort).RunAsync();
 
             new RescanBlockchain( (c) =>
             {
-                Sender.PrivateReply(msg, "Rescan of user wallet complete.").Wait();
+                Sender.PrivateReply(msg, "Rescan of user wallet complete.");
             }, (e) =>
             {
-                Sender.PrivateReply(msg, "Oof. Couldn't rescan user wallet.").Wait();
-            }, cfg.WalletHost, cfg.UserWalletPort).RunAsync();
+                Sender.PrivateReply(msg, "Oof. Couldn't rescan user wallet.");
+            }, cfg.WalletHost, cfg.UserWalletPort).Run();
         }
     }
 }

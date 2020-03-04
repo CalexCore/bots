@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Discord.WebSocket;
 using Nerva.Bots;
 using Nerva.Bots.Helpers;
@@ -11,24 +10,24 @@ namespace Fusion.Commands
     [Command("sendall", "Empty your bag")]
     public class SendAll : ICommand
     {
-        public async Task Process(SocketUserMessage msg)
+        public void Process(SocketUserMessage msg)
         {
             FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
 
             if (!cfg.UserWalletCache.ContainsKey(msg.Author.Id))
-                await AccountHelper.CreateNewAccount(msg);
+                AccountHelper.CreateNewAccount(msg);
             else
             {
                 string address;
                 if (!AccountHelper.ParseAddressFromMessage(msg, out address))
                 {
-                    await Sender.PrivateReply(msg, "Oof. No good. You didn't provide a valid address. :derp:");
+                    Sender.PrivateReply(msg, "Oof. No good. You didn't provide a valid address. :derp:");
                     return;
                 }
 
                 uint accountIndex = cfg.UserWalletCache[msg.Author.Id].Item1;
 
-                await new SweepAll(new SweepAllRequestData
+                new SweepAll(new SweepAllRequestData
                 {
                     AccountIndex = accountIndex,
                     Address = address,
@@ -46,13 +45,13 @@ namespace Fusion.Commands
                         txHashList += $"{r.TxHashList[i]}\r\n";
                     }
 
-                    Sender.PrivateReply(msg, $"{totalAmount} xam was sent with a fee of {totalFee} xam in {numTxs} transactions\r\n{txHashList}").Wait();
+                    Sender.PrivateReply(msg, $"{totalAmount} xam was sent with a fee of {totalFee} xam in {numTxs} transactions\r\n{txHashList}");
                 },
                 (RequestError e) =>
                 {
-                    Sender.PrivateReply(msg, "Oof. No good. You are going to have to try again later.").Wait();
+                    Sender.PrivateReply(msg, "Oof. No good. You are going to have to try again later.");
                 },
-                cfg.WalletHost, cfg.UserWalletPort).RunAsync();
+                cfg.WalletHost, cfg.UserWalletPort).Run();
             }
         }
     }

@@ -45,13 +45,16 @@ namespace Nerva.Bots
 				token = cmd["token"].Value;
 			}
 
-			if (token == null && cmd["token-file"] != null)
+			if (string.IsNullOrEmpty(token) && cmd["token-file"] != null)
 			{
 				await Log.Write("Token loaded from file");
 				token = File.ReadAllText(cmd["token-file"].Value);
 			}
 
-			if (token == null)
+			if (string.IsNullOrEmpty(token))
+				token = Environment.GetEnvironmentVariable("BOT_TOKEN");
+
+			if (string.IsNullOrEmpty(token))
 			{
 				await Log.Write(Log_Severity.Fatal, "Bot token not provided!");
 				Environment.Exit(0);
@@ -65,12 +68,15 @@ namespace Nerva.Bots
             if (cmd["password"] != null)
                 pw = cmd["password"].Value;
             else
+				pw = Environment.GetEnvironmentVariable("BOT_TOKEN_PASSWORD");
+
+			if (string.IsNullOrEmpty(pw))
                 pw = PasswordPrompt.Get("Please enter your token decryption password");
 
 			try {
 				decryptedToken = token.Decrypt(pw);
 			} catch {
-				await Log.Write(Log_Severity.Fatal, "Incorrect password");
+				await Log.Write(Log_Severity.Fatal, $"Incorrect password: {pw}");
 				Environment.Exit(0);
 			}
 
@@ -161,11 +167,15 @@ namespace Nerva.Bots
 				if (commands.Length == 0)
 					return;
 
+#pragma warning disable 4014
 				foreach (var c in commands)
-				{
 					if (Globals.Commands.ContainsKey(c))
-						await ((ICommand)Activator.CreateInstance(Globals.Commands[c])).Process(msg);
-				}
+					{
+						Task.Run(() => {
+							((ICommand)Activator.CreateInstance(Globals.Commands[c])).Process(msg);
+						});
+					}
+#pragma warning restore 4014
 			}
 			catch (Exception ex)
 			{

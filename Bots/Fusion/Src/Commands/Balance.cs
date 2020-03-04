@@ -5,22 +5,21 @@ using Nerva.Bots.Plugin;
 using Nerva.Rpc;
 using Nerva.Rpc.Wallet;
 using Nerva.Bots.Helpers;
-using System.Threading.Tasks;
 
 namespace Fusion.Commands
 {
     [Command("balance", "Get information on your balance")]
     public class Balance : ICommand
     {
-        public async Task Process(SocketUserMessage msg)
+        public void Process(SocketUserMessage msg)
         {
             FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
 
             if (!cfg.UserWalletCache.ContainsKey(msg.Author.Id))
-                await AccountHelper.CreateNewAccount(msg);
+                AccountHelper.CreateNewAccount(msg);
             else
             {
-                await new GetBalance(new GetBalanceRequestData
+                new GetBalance(new GetBalanceRequestData
                 {
                     AccountIndex = cfg.UserWalletCache[msg.Author.Id].Item1
                 },
@@ -36,13 +35,13 @@ namespace Fusion.Commands
                     eb.AddField($"Unlocked", $"{result.UnlockedBalance.FromAtomicUnits()} xam");
                     eb.AddField($"Total", $"{result.Balance.FromAtomicUnits()} xam");
 
-                    Sender.PrivateReply(msg, null, eb.Build()).Wait();
+                    Sender.PrivateReply(msg, null, eb.Build());
                 },
                 (RequestError e) =>
                 {
-                    Sender.PrivateReply(msg, "Oof. No good. You are going to have to try again later.").Wait();
+                    Sender.PrivateReply(msg, "Oof. No good. You are going to have to try again later.");
                 },
-                cfg.WalletHost, cfg.UserWalletPort).RunAsync();
+                cfg.WalletHost, cfg.UserWalletPort).Run();
             }
         }
     }

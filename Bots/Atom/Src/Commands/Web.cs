@@ -1,16 +1,17 @@
-using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Nerva.Bots;
 using Nerva.Bots.Helpers;
 using Nerva.Bots.Plugin;
 
+#pragma warning disable 4014
+
 namespace Atom.Commands
 {
     [Command("web", "Get some useful web links")]
     public class Web : ICommand
     {
-        public async Task Process(SocketUserMessage msg)
+        public void Process(SocketUserMessage msg)
         {
             var em = new EmbedBuilder()
             .WithAuthor("Web Links", Globals.Client.CurrentUser.GetAvatarUrl())
@@ -24,7 +25,7 @@ namespace Atom.Commands
             em.AddField("Source Code", "[Gitlab](https://gitlab.org/amity-project)", true);
             em.AddField("Block Explorer", "[explorer.getamitycoin.org](https://explorer.getamitycoin.org/)", true);
 
-            await DiscordResponse.Reply(msg, embed: em.Build());
+            DiscordResponse.Reply(msg, embed: em.Build());
         }
     }
 }

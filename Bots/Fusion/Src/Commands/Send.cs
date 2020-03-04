@@ -5,19 +5,18 @@ using Nerva.Bots.Plugin;
 using Nerva.Rpc;
 using Nerva.Rpc.Wallet;
 using Nerva.Bots.Helpers;
-using System.Threading.Tasks;
 
 namespace Fusion.Commands
 {
     [Command("send", "Send some coins to one or more addresses")]
     public class Send : ICommand
     {
-        public async Task Process(SocketUserMessage msg)
+        public void Process(SocketUserMessage msg)
         {
             FusionBotConfig cfg = ((FusionBotConfig)Globals.Bot.Config);
 
             if (!cfg.UserWalletCache.ContainsKey(msg.Author.Id))
-                await AccountHelper.CreateNewAccount(msg);
+                AccountHelper.CreateNewAccount(msg);
             else
             {
                 uint accountIndex = cfg.UserWalletCache[msg.Author.Id].Item1;
@@ -27,17 +26,17 @@ namespace Fusion.Commands
 
                 if (!AccountHelper.ParseAddressFromMessage(msg, out address))
                 {
-                    await Sender.PrivateReply(msg, "Oof. No good. You didn't provide a valid address. :derp:");
+                    Sender.PrivateReply(msg, "Oof. No good. You didn't provide a valid address. :derp:");
                     return;
                 }
 
                 if (!AccountHelper.ParseDoubleFromMessage(msg, out amount))
                 {
-                    await Sender.PrivateReply(msg, "Oof. No good. You need to know how much you want to send. :derp:");
+                    Sender.PrivateReply(msg, "Oof. No good. You need to know how much you want to send. :derp:");
                     return;
                 }
 
-                await new Transfer(new TransferRequestData
+                new Transfer(new TransferRequestData
                 {
                     AccountIndex = accountIndex,
                     Destinations = new List<TransferDestination> {
@@ -48,13 +47,13 @@ namespace Fusion.Commands
                 },
                 (TransferResponseData r) =>
                 {
-                    Sender.PrivateReply(msg, $"{r.Amount.FromAtomicUnits()} xam was sent with a fee of {r.Fee.FromAtomicUnits()} xam\r\n{r.TxHash}").Wait();
+                    Sender.PrivateReply(msg, $"{r.Amount.FromAtomicUnits()} xam was sent with a fee of {r.Fee.FromAtomicUnits()} xam\r\n{r.TxHash}");
                 },
                 (RequestError e) =>
                 {
-                    Sender.PrivateReply(msg, "Oof. No good. You are going to have to try again later.").Wait();
+                    Sender.PrivateReply(msg, "Oof. No good. You are going to have to try again later.");
                 },
-                cfg.WalletHost, cfg.UserWalletPort).RunAsync();
+                cfg.WalletHost, cfg.UserWalletPort).Run();
             }
         }
     }

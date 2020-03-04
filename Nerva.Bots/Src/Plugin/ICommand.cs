@@ -21,6 +21,6 @@ namespace Nerva.Bots.Plugin
 
     public interface ICommand
     {
-        Task Process(SocketUserMessage userMsg);
+        void Process(SocketUserMessage userMsg);
     }
 }

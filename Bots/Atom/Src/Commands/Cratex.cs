@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Nerva.Bots;
@@ -12,9 +11,9 @@ namespace Atom.Commands
     [Command("cratex", "Get market info from Cratex.io")]
     public class Cratex : ICommand
     {
-        public async Task Process(SocketUserMessage msg)
+        public void Process(SocketUserMessage msg)
         {
-            RequestData rd = await Request.Http("https://cratex.io/api/v1/get_markets.php?market=XAM/BTC");
+            RequestData rd = Request.Http("https://cratex.io/api/v1/get_markets.php?market=XAM/BTC");
             if (!rd.IsError)
             {
                 var json = JsonConvert.DeserializeObject<MarketInfo>(rd.ResultString);
@@ -31,7 +30,7 @@ namespace Atom.Commands
                 //em.AddField("High", json.High * 100000000.0d, true);
                 //em.AddField("Low", json.Low * 100000000.0d, true);
 
-                await DiscordResponse.Reply(msg, embed: em.Build());
+                DiscordResponse.Reply(msg, embed: em.Build());
             }
         }
     }

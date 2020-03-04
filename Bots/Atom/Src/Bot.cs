@@ -11,24 +11,27 @@ namespace Atom
         public ulong BotId => 450609948246671360;
 
         public List<ulong> BotChannelIds => new List<ulong>
-		{
-			509444814404714501, // Amity bots channel
+        {
+            509444814404714501, // Amity bots channel
 		};
 
         public List<ulong> DevRoleIds => new List<ulong>
-		{
-			556604722476351490 //Amity admin role
+        {
+            556604722476351490 //Amity admin role
 		};
-        
+
         public string CmdPrefix => ".";
 
-        //todo: set seed node addresses and potentially change paths
-        //bot expects <seed_node_url>/api/...
-        public static readonly string[] SeedNodes = new string[]
+        public static List<string> GetSeedNodes()
         {
-            "http://s3.xam.xyz",
-            "http://s4.xam.xyz"
-        };
+            return new List<string>()
+            {
+                "51.75.92.73",
+                "54.39.178.95",
+                "3.17.204.129",
+                "54.169.246.203"
+            };
+        }
     }
 
     class AtomBot : IBot

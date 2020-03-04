@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringEncrypter", "Tools\St
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentIdEncrypter", "Tools\PaymentIdEncrypter\PaymentIdEncrypter.csproj", "{9F84650E-7F88-4AC2-B084-FA19B9D988A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PeerListScraper", "Tools\PeerListScraper\PeerListScraper.csproj", "{9C84650E-7F88-4AC2-B084-FA19B9D988A9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FusionWalletBackup", "Tools\FusionWalletBackup\FusionWalletBackup.csproj", "{9F84650E-7F88-4AC2-B084-FA19B9D988B9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MagellanServer", "Servers\Magellan\Magellan.csproj", "{9F84650E-7F88-4AC2-B084-FA29B9D989A9}"
 EndProject
@@ -62,12 +62,12 @@ Global
 		{9F84650E-7F88-4AC2-B084-FA19B9D988A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F84650E-7F88-4AC2-B084-FA19B9D988A9}.Release|Any CPU.Build.0 = Release|Any CPU
 
-		{9C84650E-7F88-4AC2-B084-FA19B9D988A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9C84650E-7F88-4AC2-B084-FA19B9D988A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9C84650E-7F88-4AC2-B084-FA19B9D988A9}.PortableDebug|Any CPU.ActiveCfg = PortableDebug|Any CPU
-		{9C84650E-7F88-4AC2-B084-FA19B9D988A9}.PortableDebug|Any CPU.Build.0 = PortableDebug|Any CPU
-		{9C84650E-7F88-4AC2-B084-FA19B9D988A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9C84650E-7F88-4AC2-B084-FA19B9D988A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F84650E-7F88-4AC2-B084-FA19B9D988B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F84650E-7F88-4AC2-B084-FA19B9D988B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F84650E-7F88-4AC2-B084-FA19B9D988B9}.PortableDebug|Any CPU.ActiveCfg = PortableDebug|Any CPU
+		{9F84650E-7F88-4AC2-B084-FA19B9D988B9}.PortableDebug|Any CPU.Build.0 = PortableDebug|Any CPU
+		{9F84650E-7F88-4AC2-B084-FA19B9D988B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F84650E-7F88-4AC2-B084-FA19B9D988B9}.Release|Any CPU.Build.0 = Release|Any CPU
 
 		{9F84650E-7F88-4AC2-B084-FA29B9D989A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9F84650E-7F88-4AC2-B084-FA29B9D989A9}.Debug|Any CPU.Build.0 = Debug|Any CPU

@@ -1,6 +1,7 @@
 using System;
-using System.Threading.Tasks;
+using Discord;
 using Discord.WebSocket;
+using Nerva.Bots;
 using Nerva.Bots.Helpers;
 using Nerva.Bots.Plugin;
 using Newtonsoft.Json;
@@ -10,23 +11,40 @@ namespace Atom.Commands
     [Command("nethash", "Get the current network hashrate")]
     public class Nethash : ICommand
     {
-        public async Task Process(SocketUserMessage msg)
+        public void Process(SocketUserMessage msg)
         {
-            RequestData rd = await Request.Api(AtomBotConfig.SeedNodes, "daemon/get_info", msg.Channel);
-            if (!rd.IsError)
+            var em = new EmbedBuilder()
+            .WithAuthor("Amity Network Stats", Globals.Client.CurrentUser.GetAvatarUrl())
+            .WithDescription("Network hashrate")
+            .WithColor(Color.DarkRed)
+            .WithThumbnailUrl(Globals.Client.CurrentUser.GetAvatarUrl());
+
+            Request.ApiAll(AtomBotConfig.GetSeedNodes(), "daemon/get_info", msg.Channel, (rd) =>
             {
-                float hr = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(rd.ResultString).Result.Difficulty / 120.0f;
-                string formatted = $"{hr} h/s";
+                foreach (var r in rd)
+                {
+                    string result = "No response...";
 
-                float kh = (float)Math.Round(hr / 1000.0f, 2);
-                float mh = (float)Math.Round(hr / 1000000.0f, 2);
-                if (mh > 1)
-                    formatted = $"{mh} mh/s";
-                else
-                    formatted = $"{kh} kh/s";
+                    if (r.Value != null)
+                    {
+                        result = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(r.Value.ResultString).Result.Difficulty.ToString();
 
-                await DiscordResponse.Reply(msg, text: $"Current nethash: {formatted}");
-            }
+                        float hr = JsonConvert.DeserializeObject<JsonResult<NodeInfo>>(r.Value.ResultString).Result.Difficulty / 60.0f;
+                        result = $"{hr} h/s";
+
+                        float kh = (float)Math.Round(hr / 1000.0f, 2);
+                        float mh = (float)Math.Round(hr / 1000000.0f, 2);
+                        if (mh > 1)
+                            result = $"{mh} mh/s";
+                        else
+                            result = $"{kh} kh/s";
+                    }
+
+                    em.AddField(r.Key, result);
+                }
+
+                DiscordResponse.Reply(msg, embed: em.Build());
+            });
         }
     }
 }
