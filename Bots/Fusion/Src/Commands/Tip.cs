@@ -39,7 +39,7 @@ namespace Fusion.Commands
                         if (string.IsNullOrEmpty(address))
                         {
                             Sender.PrivateReply(msg, $"{m.Mention} does not have a wallet. They cannot take your tip.");
-                            Sender.SendPrivateMessage(Globals.Client.GetUser(m.Id), $"{msg.Author.Mention} tried to send you {amount} xam, but you don't have a wallet");
+                            Sender.SendPrivateMessage(Globals.Client.GetUser(m.Id), $"{msg.Author.Mention} tried to send you {amount} xmr, but you don't have a wallet");
                         }
                         else
                             SendToUser(msg, m, accountIndex, amount.ToAtomicUnits());
@@ -63,11 +63,11 @@ namespace Fusion.Commands
             },
             (TransferResponseData r) =>
             {
-                Sender.SendPrivateMessage(Globals.Client.GetUser(msg.Author.Id), $"You sent {r.Amount.FromAtomicUnits()} xam to {recipient.Mention} with a fee of {r.Fee.FromAtomicUnits()} xam\r\n{r.TxHash}");
+                Sender.SendPrivateMessage(Globals.Client.GetUser(msg.Author.Id), $"You sent {r.Amount.FromAtomicUnits()} xmr to {recipient.Mention} with a fee of {r.Fee.FromAtomicUnits()} xmr\r\n{r.TxHash}");
                 msg.AddReactionAsync(new Emoji("💸"));
 
                 if (recipient.Id != cfg.BotId) //exception thrown if trying to send a DM to fusion, so skip
-                    Sender.SendPrivateMessage(Globals.Client.GetUser(recipient.Id), $"{msg.Author.Username} sent you {r.Amount.FromAtomicUnits()} xam");
+                    Sender.SendPrivateMessage(Globals.Client.GetUser(recipient.Id), $"{msg.Author.Username} sent you {r.Amount.FromAtomicUnits()} xmr");
             },
             (RequestError e) =>
             {

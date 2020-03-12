@@ -45,7 +45,7 @@ namespace Fusion.Commands
                         txHashList += $"{r.TxHashList[i]}\r\n";
                     }
 
-                    Sender.PrivateReply(msg, $"{totalAmount} xam was sent with a fee of {totalFee} xam in {numTxs} transactions\r\n{txHashList}");
+                    Sender.PrivateReply(msg, $"{totalAmount} xmr was sent with a fee of {totalFee} xmr in {numTxs} transactions\r\n{txHashList}");
                 },
                 (RequestError e) =>
                 {

@@ -26,9 +26,9 @@ namespace Fusion.Commands.Gaming
                     return;
                 }
 
-                ulong totalAmount = betAmount.ToAtomicUnits() + (0.1d).ToAtomicUnits();
+                ulong totalAmount = betAmount.ToAtomicUnits() + (0.01d).ToAtomicUnits();
 
-                //both parties must have the amount + 0.1xam to cover potential fees
+                //both parties must have the amount + 0.01xmr to cover potential fees
 
                 uint playerAccountIndex = cfg.UserWalletCache[msg.Author.Id].Item1;
                 string playerAddress = cfg.UserWalletCache[msg.Author.Id].Item2;

@@ -57,9 +57,9 @@ namespace Fusion.Commands.Gaming
 
                 RequestError err = AccountHelper.PayUser((double)sender.Parameters.MinorPrize, cfg.BotId, n[w]);
                 if (err != null)
-                    Sender.SendPrivateMessage(winner, $"You just won {sender.Parameters.MinorPrize}xam in the lottery, but there was a problem with the payout. Please contact an admin and quote number `{tsNow}`");
+                    Sender.SendPrivateMessage(winner, $"You just won {sender.Parameters.MinorPrize}xmr in the lottery, but there was a problem with the payout. Please contact an admin and quote number `{tsNow}`");
                 else
-                    Sender.SendPrivateMessage(winner, $"You just won {sender.Parameters.MinorPrize}xam in the lottery.");
+                    Sender.SendPrivateMessage(winner, $"You just won {sender.Parameters.MinorPrize}xmr in the lottery.");
             }
 
             winnerList += ":fireworks:";
@@ -75,9 +75,9 @@ namespace Fusion.Commands.Gaming
                 {
                     RequestError err = AccountHelper.PayUser((double)sender.JackpotAmount, cfg.BotId, n[w]);
                     if (err != null)
-                        Sender.SendPrivateMessage(Globals.Client.GetUser(n[w]), $"You just won the lottery jackpot of {sender.JackpotAmount}xam, but there was a problem with the payout. Please contact an admin and quote number `{tsNow}`");
+                        Sender.SendPrivateMessage(Globals.Client.GetUser(n[w]), $"You just won the lottery jackpot of {sender.JackpotAmount}xmr, but there was a problem with the payout. Please contact an admin and quote number `{tsNow}`");
                     else
-                        Sender.SendPrivateMessage(Globals.Client.GetUser(n[w]), $"You just won the lottery jackpot of {sender.JackpotAmount}xam.");
+                        Sender.SendPrivateMessage(Globals.Client.GetUser(n[w]), $"You just won the lottery jackpot of {sender.JackpotAmount}xmr.");
 
                     jackpot = 0;
                 }

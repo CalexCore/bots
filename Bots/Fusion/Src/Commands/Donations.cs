@@ -84,7 +84,7 @@ namespace Fusion.Commands
                 foreach (var o in tt.Outgoing)
                     outTotal += o.Amount;
 
-                eb.AddField($"{a.Name}: {bb.FromAtomicUnits()} xam ({outTotal.FromAtomicUnits()} out)", sb.ToString());
+                eb.AddField($"{a.Name}: {bb.FromAtomicUnits()} xmr ({outTotal.FromAtomicUnits()} out)", sb.ToString());
             }
 
             DiscordResponse.Reply(msg, embed: eb.Build());

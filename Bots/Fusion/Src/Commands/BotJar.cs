@@ -8,7 +8,7 @@ using Nerva.Bots.Helpers;
 
 namespace Fusion.Commands
 {
-    [Command("botjar", "Get information about fusion's wallet")]
+    [Command("botjar", "Get information about the bot wallet")]
     public class BotJar : ICommand
     {
         public void Process(SocketUserMessage msg)
@@ -22,14 +22,14 @@ namespace Fusion.Commands
             (GetBalanceResponseData result) =>
             {
                 EmbedBuilder eb = new EmbedBuilder()
-                .WithAuthor($"Billys's Tip Jar", Globals.Client.CurrentUser.GetAvatarUrl())
+                .WithAuthor($"Tip Jar", Globals.Client.CurrentUser.GetAvatarUrl())
                 .WithDescription("Whale or fail?")
                 .WithColor(Color.DarkTeal)
                 .WithThumbnailUrl(Globals.Client.CurrentUser.GetAvatarUrl());
 
                 eb.AddField("Address", cfg.UserWalletCache[cfg.BotId].Item2);
-                eb.AddField("Unlocked", $"{result.UnlockedBalance.FromAtomicUnits()} xam");
-                eb.AddField("Total", $"{result.Balance.FromAtomicUnits()} xam");
+                eb.AddField("Unlocked", $"{result.UnlockedBalance.FromAtomicUnits()} xmr");
+                eb.AddField("Total", $"{result.Balance.FromAtomicUnits()} xmr");
 
                 Sender.PublicReply(msg, null, eb.Build());
             },
